@@ -1,0 +1,8 @@
+export type { Project } from './project'
+export type { Certificate } from './certificate'
+export type { Achievement } from './achievement'
+export type { Skill, SkillCategory } from './skill'
+export type { Education } from './education'
+export type { Experience } from './experience'
+export type { SocialLink } from './social-link'
+export type { Profile } from './profile'
