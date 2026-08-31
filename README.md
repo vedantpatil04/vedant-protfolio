@@ -1,6 +1,7 @@
 # Vedant Patil — Portfolio
 
-Phase 1: foundation & design system for a full-stack developer portfolio.
+Phase 1: frontend foundation & design system.
+Phase 2: backend, MongoDB data layer, and admin authentication.
 
 ## Stack
 
@@ -8,11 +9,8 @@ Phase 1: foundation & design system for a full-stack developer portfolio.
 components (Radix primitives + CVA), Framer Motion, Lucide icons,
 React Router.
 
-**Server** — Node.js, Express, TypeScript. Structural foundation only;
-no persisted data yet (see [Phase 1 scope](#phase-1-scope)).
-
-**Database** — MongoDB via Mongoose. Connection helper and one
-reference model (`Project`) exist; nothing is seeded.
+**Server** — Node.js, Express, TypeScript, MongoDB/Mongoose, JWT
+(httpOnly cookie), bcryptjs, Zod validation, Helmet, rate limiting.
 
 ## Project structure
 
@@ -23,79 +21,131 @@ portfolio/
 │   │   ├── ui/           # Button, Card, Modal, Tabs, Toast, ...
 │   │   ├── layout/       # Container, Section, TwoColumn, Footer, ...
 │   │   ├── navigation/   # Navbar, NavLink, MobileMenu
-│   │   └── shared/       # ThemeProvider, CornerBrackets, Reveal, ...
-│   ├── pages/            # one file per route
+│   │   └── shared/       # ThemeProvider, AuthProvider, RequireAuth, ...
+│   ├── pages/            # one file per route (incl. admin/)
 │   ├── sections/         # homepage section components
-│   ├── hooks/
-│   ├── lib/              # cn(), motion presets
-│   ├── services/         # API client stub
-│   ├── types/            # Project, Certificate, Achievement, ...
-│   ├── data/              # profile.ts — single source of identity/content
-│   ├── constants/        # routes, nav links, design tokens (JS side)
-│   └── index.css         # Tailwind v4 theme + design tokens (CSS side)
+│   ├── hooks/            # useAuth, useTheme, usePageTitle, ...
+│   ├── lib/               # cn(), motion presets
+│   ├── services/         # API client + one service file per resource
+│   ├── types/             # Project, Certificate, ..., SafeAdmin
+│   ├── data/               # profile.ts — single source of identity/content
+│   ├── constants/         # routes, nav links, design tokens (JS side)
+│   └── index.css          # Tailwind v4 theme + design tokens (CSS side)
 ├── server/
 │   └── src/
-│       ├── config/       # env, database connection
-│       ├── controllers/
-│       ├── middleware/   # error handler, request logger
-│       ├── models/       # Mongoose schemas
+│       ├── config/        # env (Zod-validated), database (Mongoose)
+│       ├── controllers/   # auth + one controller per content resource
+│       ├── middleware/    # authenticate, validate, error-handler, rate-limit, ...
+│       ├── models/        # Admin, Project, Certificate, Achievement, Skill,
+│       │                  # Education, Experience, Message, SiteSettings
 │       ├── routes/
-│       ├── types/
+│       ├── scripts/       # seed-admin.ts
+│       ├── types/         # api envelope, Zod schemas, Express augmentation
+│       ├── utils/         # jwt, password, cookies, crud-factory, http-error
 │       └── server.ts
-└── shared/                # reserved for cross-package contracts (Phase 2+)
+└── shared/                 # reserved for cross-package contracts (Phase 3+)
 ```
 
 ## Getting started
 
-### Client
+### 1. Database
 
-```bash
-npm install
-npm run dev       # http://localhost:5173
-```
+You need a MongoDB instance reachable at `MONGODB_URI` — local
+(`mongodb://localhost:27017/portfolio`) or a hosted cluster (e.g.
+MongoDB Atlas).
 
-### Server (optional in Phase 1 — nothing depends on it yet)
+### 2. Server
 
 ```bash
 cd server
 npm install
-cp .env.example .env
-npm run dev        # http://localhost:4000
+cp .env.example .env      # fill in MONGODB_URI, JWT_SECRET, CLIENT_URL
+
+npm run seed:admin        # requires ADMIN_NAME/ADMIN_EMAIL/ADMIN_PASSWORD in .env
+npm run dev                # http://localhost:4000
 ```
 
-## Design system
+`JWT_SECRET` should be a long random string in any real deployment —
+`npx node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
+is a quick way to generate one.
 
-- **Color** — dark mode is a near-black `#0A0B0D` with a muted brass
-  accent (`#E3B341`); light mode is a warm off-white, independently
-  tuned rather than inverted. One primary accent, one supporting
-  slate-blue accent used sparingly. Tokens live in `src/index.css`.
-- **Type** — Manrope (display), Public Sans (body), IBM Plex Mono
-  (code/labels). Scale defined as utility classes: `.text-display`,
-  `.text-h1`–`.text-h3`, `.text-body*`, `.text-caption`, `.text-label`,
-  `.text-code`.
-- **Signature motif** — corner-bracket "calibration mark" frames
-  (`<CornerBrackets />`), used sparingly on the hero panel and a few
-  interactive surfaces instead of shadows/glassmorphism/gradients.
-- **Motion** — centralized in `src/lib/motion.ts`. Fast, subtle,
-  purposeful; respects `prefers-reduced-motion`.
+### 3. Client
+
+```bash
+npm install
+npm run dev                # http://localhost:5173
+```
+
+The dev server proxies `/api/*` to `http://localhost:4000`, so the
+client and server share an origin in development — no CORS
+configuration needed locally, and the httpOnly auth cookie just works.
+In production, set `CLIENT_URL` on the server to your deployed client
+origin (CORS is configured to allow exactly that origin, with
+credentials) and `VITE_API_BASE_URL` on the client if the API isn't
+served from the same origin/proxy.
+
+### 4. Sign in to /admin
+
+Visit `http://localhost:5173/admin/login` and sign in with the
+`ADMIN_EMAIL` / `ADMIN_PASSWORD` you seeded. `/admin` is protected —
+visiting it without a session redirects to the login page and back
+once you're signed in.
+
+## Authentication model
+
+- Password hashing: bcryptjs, 12 salt rounds.
+- Session: JWT signed with `JWT_SECRET`, stored in an **httpOnly,
+  sameSite=lax cookie** (not localStorage) — set on login, cleared on
+  logout, verified + re-checked against the `Admin` collection
+  (`isActive`) on every protected request.
+- Login always returns the same generic "Invalid email or password"
+  for both unknown-email and wrong-password cases.
+- The login endpoint is rate-limited (10 attempts / 15 min / IP).
+- `GET /api/auth/me` is how the frontend (`useAuth`) determines
+  `loading` → `authenticated` / `unauthenticated` on load.
+
+## API
+
+Every response follows one envelope:
+
+```json
+{ "success": true, "data": {}, "message": "..." }
+{ "success": false, "message": "...", "code": "..." }
+```
+
+Public reads exist for every content resource; mutating verbs
+(`POST` / `PUT` / `PATCH` / `DELETE`) on the same routes require the
+admin session (see each `routes/*.routes.ts` file — protection is
+per-route rather than a separate `/admin/*` tree, since GET stays
+public and only writes need auth). `POST /api/messages` (the contact
+form) is the one public write. Content resources share a small CRUD
+factory (`utils/crud-factory.ts`) to avoid repeating the same
+list/get/create/update/delete logic seven times.
+
+`Project` publicly only returns `status: "published"` documents —
+drafts never leak through the public API.
 
 ## Editing your identity
 
-Everything personal lives in **`src/data/profile.ts`**. It currently
-has real values only for `name` and `title` — `location`, `github`,
-`linkedin`, `email`, `resume` and `availability` are left blank on
-purpose rather than filled with placeholder/fake data. Fill them in
-and the navbar, footer, hero panel and contact section pick them up
-automatically.
+`src/data/profile.ts` still drives the static frontend (nav, footer,
+hero). `SiteSettings` in the database is the equivalent for
+content that will eventually be admin-editable — they're
+intentionally separate for now; a later phase can point the frontend
+at `GET /api/settings` instead of the static file.
 
-## Phase 1 scope
+## Phase 2 scope
 
-Built: architecture, routing shell, design system, dark/light theming,
-core UI + layout + navigation components, typed data models, homepage
-structural shell, footer, responsive + accessibility + motion
-foundations, server/database architecture (not yet wired to real data).
+Built: server architecture, env validation, MongoDB connection with
+graceful shutdown, all content + Admin + Message + SiteSettings
+models with indexes, JWT/cookie authentication, admin seed script,
+protected CRUD route foundation for every resource, Zod validation,
+global error handling (Mongoose validation/cast/duplicate-key errors,
+HttpErrors, generic fallback — no stack traces leaked in production),
+Helmet + CORS + rate limiting, a typed client service layer, and a
+working `/admin/login` → `/admin` (protected) flow.
 
-Not built yet (by design): real project/certificate/achievement
-content, GitHub activity feed, coding-stat integrations, resume file,
-admin auth, and the API actually persisting/serving data. Each of
-these has an honest empty state in the UI rather than fake content.
+Not built yet (by design, per this phase's scope): the full admin
+dashboard/CRUD UI, the public Contact page actually submitting to
+`POST /api/messages`, GitHub integration, file/image upload, and
+email notifications. `src/services/message.service.ts` already wraps
+the endpoint for whenever the Contact UI phase wires it up.

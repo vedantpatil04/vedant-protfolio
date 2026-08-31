@@ -1,12 +1,12 @@
-import type { Request, Response } from 'express'
-import type { ApiSuccess } from '../types/api'
+import { ProjectModel } from '../models/Project'
+import * as crud from '../utils/crud-factory'
 
-/**
- * Structural placeholder. Returns an empty list rather than fake data —
- * swap for `ProjectModel.find()` once the database is connected and
- * seeded in Phase 2.
- */
-export async function listProjects(_req: Request, res: Response) {
-  const body: ApiSuccess<unknown[]> = { success: true, data: [] }
-  res.json(body)
-}
+const publicFilter = { status: 'published' }
+
+export const listProjects = crud.publicList(ProjectModel, { publicFilter })
+export const getProjectBySlug = crud.publicGetBySlug(ProjectModel, { publicFilter })
+
+export const listAllProjects = crud.adminList(ProjectModel)
+export const createProject = crud.adminCreate(ProjectModel)
+export const updateProject = crud.adminUpdate(ProjectModel)
+export const deleteProject = crud.adminDelete(ProjectModel)

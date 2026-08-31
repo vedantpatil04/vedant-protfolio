@@ -1,30 +1,32 @@
 import { Schema, model, type InferSchemaType } from 'mongoose'
 
-/**
- * Mirrors the client-side `Project` type in src/types/project.ts.
- * Reference implementation for how future models (Certificate,
- * Achievement, Skill, Education, Experience) should be structured —
- * not populated with data in Phase 1.
- */
+export const PROJECT_STATUSES = ['draft', 'published', 'archived'] as const
+
 const projectSchema = new Schema(
   {
-    slug: { type: String, required: true, unique: true, index: true },
-    title: { type: String, required: true },
+    title: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    shortDescription: { type: String, required: true },
     description: { type: String, required: true },
-    longDescription: { type: String },
-    technologies: { type: [String], default: [] },
     thumbnail: { type: String },
-    images: { type: [String], default: [] },
+    gallery: { type: [String], default: [] },
+    technologies: { type: [String], default: [] },
     githubUrl: { type: String },
     liveUrl: { type: String },
     featured: { type: Boolean, default: false },
-    role: { type: String },
-    startDate: { type: String },
-    endDate: { type: String },
-    highlights: { type: [String], default: [] },
+    problem: { type: String },
+    solution: { type: String },
+    architecture: { type: String },
+    features: { type: [String], default: [] },
+    challenges: { type: [String], default: [] },
+    outcome: { type: String },
+    status: { type: String, enum: PROJECT_STATUSES, default: 'draft' },
   },
   { timestamps: true },
 )
+
+projectSchema.index({ featured: 1 })
+projectSchema.index({ status: 1 })
 
 export type ProjectDocument = InferSchemaType<typeof projectSchema>
 export const ProjectModel = model('Project', projectSchema)

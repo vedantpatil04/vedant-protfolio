@@ -3,7 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import { TooltipProvider } from '@/components/ui/Tooltip'
 import { Navbar } from '@/components/navigation'
 import { Footer } from '@/components/layout'
-import { ScrollToTop, PageTransition } from '@/components/shared'
+import { ScrollToTop, PageTransition, RequireAuth } from '@/components/shared'
 import { ROUTES } from '@/constants/routes'
 
 import Home from '@/pages/Home'
@@ -108,7 +108,9 @@ function AppRoutes() {
           path={ROUTES.admin}
           element={
             <PageTransition>
-              <AdminDashboard />
+              <RequireAuth>
+                <AdminDashboard />
+              </RequireAuth>
             </PageTransition>
           }
         />
