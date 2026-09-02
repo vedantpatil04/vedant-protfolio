@@ -17,6 +17,7 @@ import Contact from '@/pages/Contact'
 import Resume from '@/pages/Resume'
 import AdminLogin from '@/pages/admin/Login'
 import AdminDashboard from '@/pages/admin/Dashboard'
+import NotFound from '@/pages/NotFound'
 
 function AppRoutes() {
   const location = useLocation()
@@ -111,6 +112,14 @@ function AppRoutes() {
               <RequireAuth>
                 <AdminDashboard />
               </RequireAuth>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <PageTransition>
+              <NotFound />
             </PageTransition>
           }
         />

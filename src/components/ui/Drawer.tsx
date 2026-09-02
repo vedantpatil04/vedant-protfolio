@@ -16,12 +16,28 @@ export function Drawer({ open, onOpenChange, title, side = 'right', children }: 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+        <DialogPrimitive.Overlay
+          className={cn(
+            'fixed inset-0 z-50 bg-black/50',
+            'data-[state=open]:[animation:overlay-in_var(--duration-base)_var(--ease-standard)]',
+            'data-[state=closed]:[animation:overlay-out_var(--duration-fast)_var(--ease-standard)]',
+          )}
+        />
         <DialogPrimitive.Content
           className={cn(
             'fixed inset-y-0 z-50 flex w-[86vw] max-w-sm flex-col border-border bg-surface p-6',
             'focus:outline-none',
-            side === 'right' ? 'right-0 border-l' : 'left-0 border-r',
+            side === 'right'
+              ? [
+                  'right-0 border-l',
+                  'data-[state=open]:[animation:drawer-in-right_var(--duration-base)_var(--ease-out-expo)]',
+                  'data-[state=closed]:[animation:drawer-out-right_var(--duration-fast)_var(--ease-standard)]',
+                ]
+              : [
+                  'left-0 border-r',
+                  'data-[state=open]:[animation:drawer-in-left_var(--duration-base)_var(--ease-out-expo)]',
+                  'data-[state=closed]:[animation:drawer-out-left_var(--duration-fast)_var(--ease-standard)]',
+                ],
           )}
         >
           <div className="flex items-center justify-between">

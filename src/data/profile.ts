@@ -21,7 +21,6 @@ export const profile: Profile = {
 }
 
 /** Empty, typed placeholders — ready to be populated with real content in later phases. */
-export const projects: import('@/types').Project[] = []
 export const certificates: import('@/types').Certificate[] = []
 export const achievements: import('@/types').Achievement[] = []
 export const skills: import('@/types').Skill[] = []

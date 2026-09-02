@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
@@ -31,14 +32,17 @@ export interface IconButtonProps
     VariantProps<typeof iconButtonVariants> {
   /** Required — icon-only buttons must be labeled for assistive tech. */
   'aria-label': string
+  /** Render as the child element (e.g. an external <a>) instead of a <button>. */
+  asChild?: boolean
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, variant, size, children, ...props }, ref) => {
+  ({ className, variant, size, asChild, children, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button'
     return (
-      <button ref={ref} className={cn(iconButtonVariants({ variant, size }), className)} {...props}>
+      <Comp ref={ref} className={cn(iconButtonVariants({ variant, size }), className)} {...props}>
         {children}
-      </button>
+      </Comp>
     )
   },
 )

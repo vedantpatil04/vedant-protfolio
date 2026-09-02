@@ -22,7 +22,18 @@ const projectSchema = new Schema(
     outcome: { type: String },
     status: { type: String, enum: PROJECT_STATUSES, default: 'draft' },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: Record<string, unknown>) => {
+        ret.id = String(ret._id)
+        delete ret._id
+        delete ret.__v
+        return ret
+      },
+    },
+  },
 )
 
 projectSchema.index({ featured: 1 })
