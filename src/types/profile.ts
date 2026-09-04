@@ -7,5 +7,6 @@ export interface Profile {
   linkedin?: string
   email?: string
   resume?: string
+  leetcode?: string
   availability?: 'open-to-work' | 'open-to-freelance' | 'not-available'
 }

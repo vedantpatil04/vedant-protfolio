@@ -13,10 +13,11 @@ export const profile: Profile = {
   title: 'Full-Stack Developer',
   tagline: 'Building full-stack products end to end — React on the front, Node on the back.',
   location: '', // TODO: add city/region
-  github: '', // TODO: add GitHub profile URL
+  github: 'https://github.com/vedantpatil04',
   linkedin: '', // TODO: add LinkedIn profile URL
   email: '', // TODO: add contact email
   resume: '', // TODO: add resume file URL
+  leetcode: '', // Real LeetCode profile URL not yet provided
   availability: undefined,
 }
 

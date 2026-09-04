@@ -9,6 +9,7 @@ import { experienceRouter } from './experience.routes'
 import { journeyRouter } from './journey.routes'
 import { messageRouter } from './message.routes'
 import { settingsRouter } from './settings.routes'
+import { githubRouter } from './github.routes'
 import { ok } from '../types/api'
 
 export const apiRouter = Router()
@@ -27,6 +28,7 @@ apiRouter.use('/experience', experienceRouter)
 apiRouter.use('/journey', journeyRouter)
 apiRouter.use('/messages', messageRouter)
 apiRouter.use('/settings', settingsRouter)
+apiRouter.use('/github', githubRouter)
 
 // Admin-authenticated resources are protected per-route (see each
 // router) rather than under a single /admin/* prefix, so GET stays

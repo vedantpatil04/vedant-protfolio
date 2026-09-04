@@ -17,6 +17,13 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   CLIENT_URL: z.string().min(1, 'CLIENT_URL is required'),
+
+  // GitHub integration (Phase 7). Public profile/repo/activity data works
+  // with just a username via the REST API. GITHUB_TOKEN is optional — when
+  // set, the service additionally uses the GraphQL API for the real
+  // contribution calendar and pinned repos (both unavailable unauthenticated).
+  GITHUB_USERNAME: z.string().min(1).default('vedantpatil04'),
+  GITHUB_TOKEN: z.string().optional(),
 })
 
 function loadEnv() {
@@ -42,6 +49,8 @@ export const env = {
   jwtSecret: parsedEnv.JWT_SECRET,
   jwtExpiresIn: parsedEnv.JWT_EXPIRES_IN,
   clientUrl: parsedEnv.CLIENT_URL,
+  githubUsername: parsedEnv.GITHUB_USERNAME,
+  githubToken: parsedEnv.GITHUB_TOKEN,
 } as const
 
 export const isProduction = env.nodeEnv === 'production'

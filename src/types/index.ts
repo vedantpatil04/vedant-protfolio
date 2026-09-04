@@ -11,3 +11,13 @@ export type { Experience } from './experience'
 export type { SocialLink } from './social-link'
 export type { Profile } from './profile'
 export type { SafeAdmin } from './admin'
+export type {
+  GitHubSummary,
+  GitHubProfileSummary,
+  GitHubRepoSummary,
+  LanguageStat,
+  ActivityItem,
+  ActivityType,
+  ContributionDay,
+  ContributionCalendar,
+} from './github'
