@@ -13,7 +13,18 @@ const achievementSchema = new Schema(
     url: { type: String },
     featured: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: Record<string, unknown>) => {
+        ret.id = String(ret._id)
+        delete ret._id
+        delete ret.__v
+        return ret
+      },
+    },
+  },
 )
 
 achievementSchema.index({ date: -1 })

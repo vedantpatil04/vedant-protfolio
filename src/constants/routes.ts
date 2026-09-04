@@ -8,6 +8,7 @@ export const ROUTES = {
   projects: '/projects',
   projectDetail: (slug: string = ':slug') => `/projects/${slug}`,
   certificates: '/certificates',
+  certificateDetail: (id: string = ':id') => `/certificates/${id}`,
   achievements: '/achievements',
   journey: '/journey',
   contact: '/contact',

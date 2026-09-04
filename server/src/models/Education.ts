@@ -11,7 +11,18 @@ const educationSchema = new Schema(
     description: { type: String },
     order: { type: Number, default: 0 },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: Record<string, unknown>) => {
+        ret.id = String(ret._id)
+        delete ret._id
+        delete ret.__v
+        return ret
+      },
+    },
+  },
 )
 
 educationSchema.index({ order: 1 })

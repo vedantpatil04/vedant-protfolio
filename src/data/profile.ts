@@ -20,9 +20,11 @@ export const profile: Profile = {
   availability: undefined,
 }
 
-/** Empty, typed placeholders — ready to be populated with real content in later phases. */
-export const certificates: import('@/types').Certificate[] = []
-export const achievements: import('@/types').Achievement[] = []
-export const skills: import('@/types').Skill[] = []
-export const education: import('@/types').Education[] = []
+/**
+ * Empty, typed placeholder — ready to be populated with real content
+ * in a later phase. Certificates, Achievements, Skills, Education, and
+ * Journey now come from the live API (see useCertificates/useAchievements/
+ * useSkills/useEducation/useJourney) rather than this file, since their
+ * backend + (partial) admin CRUD already exist.
+ */
 export const experience: import('@/types').Experience[] = []

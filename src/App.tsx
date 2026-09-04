@@ -11,6 +11,7 @@ import About from '@/pages/About'
 import Projects from '@/pages/Projects'
 import ProjectDetail from '@/pages/ProjectDetail'
 import Certificates from '@/pages/Certificates'
+import CertificateDetail from '@/pages/CertificateDetail'
 import Achievements from '@/pages/Achievements'
 import Journey from '@/pages/Journey'
 import Contact from '@/pages/Contact'
@@ -62,6 +63,14 @@ function AppRoutes() {
           element={
             <PageTransition>
               <Certificates />
+            </PageTransition>
+          }
+        />
+        <Route
+          path={ROUTES.certificateDetail()}
+          element={
+            <PageTransition>
+              <CertificateDetail />
             </PageTransition>
           }
         />

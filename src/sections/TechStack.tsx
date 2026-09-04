@@ -1,44 +1,87 @@
-import { Layers, Server, Database, Wrench } from 'lucide-react'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { Braces, Layers, Server, Database, Sparkles, Wrench, Boxes, ArrowUpRight, Code2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { SkillCategory } from '@/types'
 import { Section, ThreeColumn } from '@/components/layout'
-import { SectionHeader, Tag, Card } from '@/components/ui'
+import { SectionHeader, Tag, Card, Button, EmptyState } from '@/components/ui'
 import { Reveal } from '@/components/shared'
+import { useSkills } from '@/hooks/useSkills'
+import { SKILL_CATEGORY_LABELS, SKILL_CATEGORY_ORDER } from '@/constants/skills'
+import { ROUTES } from '@/constants/routes'
+import { SkillsSkeleton } from '@/components/skill'
 
-interface StackGroup {
-  label: string
-  icon: LucideIcon
-  items: string[]
+const CATEGORY_ICONS: Record<SkillCategory, LucideIcon> = {
+  language: Code2,
+  frontend: Layers,
+  backend: Server,
+  database: Database,
+  ai: Sparkles,
+  devtools: Wrench,
+  other: Boxes,
 }
 
-const STACK_GROUPS: StackGroup[] = [
-  { label: 'Frontend', icon: Layers, items: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Framer Motion'] },
-  { label: 'Backend', icon: Server, items: ['Node.js', 'Express', 'TypeScript'] },
-  { label: 'Database', icon: Database, items: ['MongoDB', 'Mongoose'] },
-  { label: 'Tooling', icon: Wrench, items: ['Git', 'ESLint', 'shadcn/ui'] },
-]
-
 export function TechStack() {
+  const { skills, loading } = useSkills()
+
+  const groups = useMemo(() => {
+    const map = new Map<SkillCategory, string[]>()
+    for (const skill of skills) {
+      const list = map.get(skill.category) ?? []
+      list.push(skill.name)
+      map.set(skill.category, list)
+    }
+    return SKILL_CATEGORY_ORDER.filter((category) => (map.get(category)?.length ?? 0) > 0).map((category) => ({
+      category,
+      items: map.get(category) ?? [],
+    }))
+  }, [skills])
+
   return (
     <Section>
       <Reveal>
-        <SectionHeader eyebrow="Toolbox" title="Tech Stack" />
+        <SectionHeader
+          eyebrow="Toolbox"
+          title="Tech Stack"
+          action={
+            !loading && groups.length > 0 ? (
+              <Button asChild variant="outline">
+                <Link to={`${ROUTES.about}#skills`}>
+                  View full stack
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            ) : undefined
+          }
+        />
       </Reveal>
       <div className="mt-10">
-        <ThreeColumn gap="md">
-          {STACK_GROUPS.map((group, i) => (
-            <Reveal key={group.label} delay={i * 0.05}>
-              <Card>
-                <group.icon className="size-5 text-accent" aria-hidden="true" />
-                <h3 className="mt-4 text-h3 text-text">{group.label}</h3>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <Tag key={item}>{item}</Tag>
-                  ))}
-                </div>
-              </Card>
-            </Reveal>
-          ))}
-        </ThreeColumn>
+        {loading && <SkillsSkeleton />}
+        {!loading && groups.length === 0 && (
+          <Reveal delay={0.05}>
+            <EmptyState icon={Braces} title="No skills published yet" />
+          </Reveal>
+        )}
+        {!loading && groups.length > 0 && (
+          <ThreeColumn gap="md">
+            {groups.map(({ category, items }, i) => {
+              const Icon = CATEGORY_ICONS[category] ?? Braces
+              return (
+                <Reveal key={category} delay={i * 0.05}>
+                  <Card>
+                    <Icon className="size-5 text-accent" aria-hidden="true" />
+                    <h3 className="mt-4 text-h3 text-text">{SKILL_CATEGORY_LABELS[category]}</h3>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {items.map((item) => (
+                        <Tag key={item}>{item}</Tag>
+                      ))}
+                    </div>
+                  </Card>
+                </Reveal>
+              )
+            })}
+          </ThreeColumn>
+        )}
       </div>
     </Section>
   )

@@ -6,6 +6,7 @@ import { achievementRouter } from './achievement.routes'
 import { skillRouter } from './skill.routes'
 import { educationRouter } from './education.routes'
 import { experienceRouter } from './experience.routes'
+import { journeyRouter } from './journey.routes'
 import { messageRouter } from './message.routes'
 import { settingsRouter } from './settings.routes'
 import { ok } from '../types/api'
@@ -23,6 +24,7 @@ apiRouter.use('/achievements', achievementRouter)
 apiRouter.use('/skills', skillRouter)
 apiRouter.use('/education', educationRouter)
 apiRouter.use('/experience', experienceRouter)
+apiRouter.use('/journey', journeyRouter)
 apiRouter.use('/messages', messageRouter)
 apiRouter.use('/settings', settingsRouter)
 

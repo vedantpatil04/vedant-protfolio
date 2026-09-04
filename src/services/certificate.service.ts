@@ -2,7 +2,8 @@ import { apiClient } from './api'
 import type { Certificate } from '@/types'
 
 export const certificateService = {
-  list: () => apiClient.get<Certificate[]>('/certificates'),
+  list: (params?: { featured?: boolean }) =>
+    apiClient.get<Certificate[]>(`/certificates${params?.featured ? '?featured=true' : ''}`),
   getById: (id: string) => apiClient.get<Certificate>(`/certificates/${id}`),
 
   // Admin
