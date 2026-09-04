@@ -26,11 +26,11 @@ export function CodingDSA() {
 
       <div className="mt-10">
         <Reveal delay={0.05}>
-          <Card className="flex flex-col gap-6 p-6 sm:p-8">
+          <Card className="flex flex-col gap-6 p-4 sm:p-6 md:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex items-start gap-4">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-accent">
-                  <Terminal className="size-5" aria-hidden="true" />
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                <div className="flex size-10 sm:size-11 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-accent">
+                  <Terminal className="size-4 sm:size-5" aria-hidden="true" />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -58,9 +58,9 @@ export function CodingDSA() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
               {dsaRepoUrl && (
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="w-full sm:w-auto justify-center">
                   <a
                     href={dsaRepoUrl}
                     target="_blank"
@@ -75,7 +75,7 @@ export function CodingDSA() {
               )}
 
               {profile.leetcode && (
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="w-full sm:w-auto justify-center">
                   <a
                     href={profile.leetcode}
                     target="_blank"
@@ -89,7 +89,7 @@ export function CodingDSA() {
               )}
 
               {profile.github && !dsaRepoUrl && (
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="w-full sm:w-auto justify-center">
                   <a
                     href={profile.github}
                     target="_blank"

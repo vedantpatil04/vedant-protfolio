@@ -61,18 +61,18 @@ export function ProjectMeta({ project }: ProjectMetaProps) {
         )}
 
         {(project.liveUrl || project.githubUrl) && (
-          <div className="flex flex-col gap-2 pt-1">
+          <div className="flex flex-col gap-2 pt-1 min-w-0">
             <span className="text-caption text-text-tertiary">Direct Links</span>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 min-w-0">
               {project.liveUrl && (
                 <a
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 font-mono text-caption text-accent hover:underline"
+                  className="flex items-center gap-2 font-mono text-caption text-accent hover:underline min-w-0"
                 >
-                  <Globe className="size-3.5" aria-hidden="true" />
-                  {project.liveUrl.replace(/^https?:\/\//, '')}
+                  <Globe className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="truncate">{project.liveUrl.replace(/^https?:\/\//, '')}</span>
                 </a>
               )}
               {project.githubUrl && (
@@ -80,10 +80,10 @@ export function ProjectMeta({ project }: ProjectMetaProps) {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 font-mono text-caption text-text-secondary hover:text-text hover:underline"
+                  className="flex items-center gap-2 font-mono text-caption text-text-secondary hover:text-text hover:underline min-w-0"
                 >
-                  <Code2 className="size-3.5" aria-hidden="true" />
-                  {project.githubUrl.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
+                  <Code2 className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="truncate">{project.githubUrl.replace(/^https?:\/\/(www\.)?github\.com\//, '')}</span>
                 </a>
               )}
             </div>

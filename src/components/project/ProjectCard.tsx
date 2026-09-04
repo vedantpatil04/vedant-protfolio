@@ -44,8 +44,9 @@ export function ProjectCard({ project, index, priority = false, className }: Pro
 
           {/* Core Info */}
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-h3 text-text group-hover:text-accent transition-colors flex items-center gap-2">
-              {project.title}
+            <h3 className="font-display text-h3 text-text group-hover:text-accent transition-colors flex items-center justify-between gap-2">
+              <span>{project.title}</span>
+              <ArrowUpRight className="size-4 md:hidden text-text-tertiary group-hover:text-accent shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
             </h3>
             <p className="max-w-2xl text-body text-text-secondary line-clamp-2">
               {project.shortDescription}

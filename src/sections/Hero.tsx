@@ -27,14 +27,14 @@ export function Hero() {
             {profile.tagline && (
               <p className="mt-6 max-w-lg text-body-lg text-text-secondary">{profile.tagline}</p>
             )}
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Button asChild size="lg">
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <Button asChild size="lg" className="w-full sm:w-auto justify-center">
                 <Link to={ROUTES.projects}>
                   View work
                   <ArrowUpRight className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto justify-center">
                 <Link to={ROUTES.contact}>Get in touch</Link>
               </Button>
             </div>
@@ -102,31 +102,47 @@ function SignalStrip() {
   const nodeX = [40, 300, 560]
 
   return (
-    <div className="mt-12 max-w-xl" aria-hidden="true">
-      <svg viewBox="0 0 600 54" className="w-full overflow-visible" preserveAspectRatio="xMinYMid meet">
-        <line
-          x1={nodeX[0]}
-          y1={10}
-          x2={nodeX[2]}
-          y2={10}
-          className="stroke-border-strong motion-safe:[stroke-dasharray:520] motion-safe:[stroke-dashoffset:520] motion-safe:animate-[signal-draw_1.1s_var(--ease-out-expo)_0.3s_forwards]"
-          strokeWidth={1}
-        />
+    <div className="mt-10 sm:mt-12 max-w-xl" aria-hidden="true">
+      {/* Mobile view: readable flow pills */}
+      <div className="flex sm:hidden flex-wrap items-center gap-2 py-1">
         {STACK_LAYERS.map((layer, i) => (
-          <g key={layer.label} transform={`translate(${nodeX[i]}, 10)`}>
-            <rect x={-4} y={-4} width={8} height={8} className="fill-bg stroke-accent" strokeWidth={1.25} />
-            <text
-              x={0}
-              y={26}
-              textAnchor="middle"
-              className="fill-text-tertiary font-mono"
-              style={{ fontSize: 10, letterSpacing: '0.08em' }}
-            >
+          <div key={layer.label} className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded border border-border bg-surface px-2.5 py-1 text-[11px] font-mono text-text-secondary">
+              <span className="size-1.5 rounded-full bg-accent" />
               {layer.label.toUpperCase()}
-            </text>
-          </g>
+            </span>
+            {i < STACK_LAYERS.length - 1 && <span className="text-text-tertiary text-xs">→</span>}
+          </div>
         ))}
-      </svg>
+      </div>
+
+      {/* Desktop / tablet view: svg architecture trace */}
+      <div className="hidden sm:block">
+        <svg viewBox="0 0 600 54" className="w-full overflow-visible" preserveAspectRatio="xMinYMid meet">
+          <line
+            x1={nodeX[0]}
+            y1={10}
+            x2={nodeX[2]}
+            y2={10}
+            className="stroke-border-strong motion-safe:[stroke-dasharray:520] motion-safe:[stroke-dashoffset:520] motion-safe:animate-[signal-draw_1.1s_var(--ease-out-expo)_0.3s_forwards]"
+            strokeWidth={1}
+          />
+          {STACK_LAYERS.map((layer, i) => (
+            <g key={layer.label} transform={`translate(${nodeX[i]}, 10)`}>
+              <rect x={-4} y={-4} width={8} height={8} className="fill-bg stroke-accent" strokeWidth={1.25} />
+              <text
+                x={0}
+                y={26}
+                textAnchor="middle"
+                className="fill-text-tertiary font-mono"
+                style={{ fontSize: 10, letterSpacing: '0.08em' }}
+              >
+                {layer.label.toUpperCase()}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
     </div>
   )
 }

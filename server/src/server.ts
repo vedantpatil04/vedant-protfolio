@@ -16,23 +16,49 @@ const app = express()
 app.set('trust proxy', 1)
 
 // Normalize allowed origins: trim whitespace and trailing slashes; support comma-separated origins
-const allowedOrigins = env.clientUrl
+const rawOrigins = env.clientUrl
   .split(',')
   .map((url) => url.trim().replace(/\/+$/, ''))
   .filter(Boolean)
 
-app.use(helmet())
+// Ensure localhost and local loopback are accepted for development and testing
+const allowedOrigins = Array.from(
+  new Set([...rawOrigins, 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']),
+)
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }),
+)
+
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server, health checks)
       if (!origin) return callback(null, true)
       const normalizedOrigin = origin.trim().replace(/\/+$/, '')
+
+      // Match explicit allowed origins
       if (allowedOrigins.includes(normalizedOrigin)) {
         return callback(null, true)
       }
-      callback(new Error(`Origin ${origin} not allowed by CORS`))
+
+      // Match *.vercel.app preview deployments and vercel domains
+      if (
+        /^https:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/.test(normalizedOrigin) ||
+        normalizedOrigin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true)
+      }
+
+      // Disallow without throwing a 500 error to the client
+      console.warn(`[cors] Rejected origin: ${origin}`)
+      return callback(null, false)
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   }),
 )
 app.use(express.json({ limit: '1mb' }))

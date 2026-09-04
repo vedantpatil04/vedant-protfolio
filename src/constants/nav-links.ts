@@ -11,6 +11,7 @@ export const PRIMARY_NAV: NavLinkItem[] = [
   { label: 'About', href: ROUTES.about },
   { label: 'Certificates', href: ROUTES.certificates },
   { label: 'Journey', href: ROUTES.journey },
+  { label: 'Contact', href: ROUTES.contact },
 ]
 
 export interface NavExternalLink {

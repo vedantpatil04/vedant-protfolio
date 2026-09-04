@@ -47,7 +47,7 @@ export function Drawer({ open, onOpenChange, title, side = 'right', children }: 
               <DialogPrimitive.Title className="sr-only">Menu</DialogPrimitive.Title>
             )}
             <DialogPrimitive.Close
-              className="rounded-sm p-1 text-text-tertiary transition-colors hover:bg-surface-2 hover:text-text"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-surface-2 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label="Close menu"
             >
               <X className="size-5" aria-hidden="true" />

@@ -23,13 +23,13 @@ export function Section({
 }: SectionProps) {
   return (
     <Tag
-      className={cn(compact ? 'py-14 sm:py-16' : 'py-16 sm:py-24 lg:py-28', className)}
+      className={cn(compact ? 'py-10 sm:py-14 md:py-16' : 'py-12 sm:py-20 lg:py-28', className)}
       {...props}
     >
       {fullWidth ? (
         children
       ) : (
-        <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-8 lg:px-12 xl:px-16">{children}</div>
+        <div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">{children}</div>
       )}
     </Tag>
   )

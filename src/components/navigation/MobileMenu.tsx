@@ -30,19 +30,17 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
       </nav>
 
       <div className="mt-auto flex flex-col gap-4 pt-8">
-        {profile.resume && (
-          <Button asChild variant="secondary" onClick={close}>
-            <Link to={ROUTES.resume}>Resume</Link>
-          </Button>
-        )}
-        <div className="flex items-center gap-4">
+        <Button asChild variant="secondary" onClick={close} className="min-h-[44px] w-full justify-center">
+          <Link to={ROUTES.resume}>Resume</Link>
+        </Button>
+        <div className="flex items-center gap-2">
           {profile.github && (
             <a
               href={profile.github}
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub"
-              className="text-text-tertiary hover:text-accent"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-surface-2 hover:text-accent"
             >
               <Code2 className="size-5" aria-hidden="true" />
             </a>
@@ -53,7 +51,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
               target="_blank"
               rel="noreferrer"
               aria-label="LinkedIn"
-              className="text-text-tertiary hover:text-accent"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-surface-2 hover:text-accent"
             >
               <Briefcase className="size-5" aria-hidden="true" />
             </a>
