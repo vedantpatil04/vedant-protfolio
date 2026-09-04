@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "https://vedant-protfolio.onrender.com/api"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vedant-protfolio.onrender.com/api/:path*"
     },

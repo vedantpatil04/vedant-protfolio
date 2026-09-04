@@ -7,7 +7,7 @@
 
 function getApiBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_BASE_URL?.trim()
-  if (!envUrl) return '/api'
+  if (!envUrl || envUrl === '/api' || envUrl === '/') return '/api'
   const cleaned = envUrl.replace(/\/+$/, '')
   return cleaned.endsWith('/api') ? cleaned : `${cleaned}/api`
 }
