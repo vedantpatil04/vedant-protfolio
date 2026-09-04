@@ -8,7 +8,7 @@ const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000 // 7 days — keep in sync with JWT_E
 export function setAuthCookie(res: Response, token: string) {
   res.cookie(AUTH_COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     secure: isProduction,
     maxAge: MAX_AGE_MS,
     path: '/',
@@ -18,7 +18,7 @@ export function setAuthCookie(res: Response, token: string) {
 export function clearAuthCookie(res: Response) {
   res.clearCookie(AUTH_COOKIE_NAME, {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     secure: isProduction,
     path: '/',
   })

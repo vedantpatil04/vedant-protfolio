@@ -5,7 +5,14 @@
  * httpOnly cookie, not localStorage.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+function getApiBaseUrl(): string {
+  const envUrl = import.meta.env.VITE_API_BASE_URL?.trim()
+  if (!envUrl) return '/api'
+  const cleaned = envUrl.replace(/\/+$/, '')
+  return cleaned.endsWith('/api') ? cleaned : `${cleaned}/api`
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 export class ApiError extends Error {
   status: number
@@ -33,7 +40,8 @@ interface ApiFailure {
 type ApiEnvelope<T> = ApiSuccess<T> | ApiFailure
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const res = await fetch(`${API_BASE_URL}${normalizedPath}`, {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...init?.headers },
     ...init,

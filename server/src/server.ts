@@ -10,8 +10,29 @@ import { requestLogger } from './middleware/request-logger'
 
 const app = express()
 
+// Trust reverse proxy (e.g. Render) for secure cookies and https protocol detection
+app.set('trust proxy', 1)
+
+// Normalize allowed origins: trim whitespace and trailing slashes; support comma-separated origins
+const allowedOrigins = env.clientUrl
+  .split(',')
+  .map((url) => url.trim().replace(/\/+$/, ''))
+  .filter(Boolean)
+
 app.use(helmet())
-app.use(cors({ origin: env.clientUrl, credentials: true }))
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true)
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '')
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true)
+      }
+      callback(new Error(`Origin ${origin} not allowed by CORS`))
+    },
+    credentials: true,
+  }),
+)
 app.use(express.json({ limit: '1mb' }))
 app.use(cookieParser())
 app.use(requestLogger)
