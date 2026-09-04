@@ -41,7 +41,13 @@ type ApiEnvelope<T> = ApiSuccess<T> | ApiFailure
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const res = await fetch(`${API_BASE_URL}${normalizedPath}`, {
+  // Prevent duplicate /api prefixes if path is passed with leading /api
+  const resourcePath = normalizedPath.startsWith('/api/')
+    ? normalizedPath.slice(4)
+    : normalizedPath === '/api'
+      ? ''
+      : normalizedPath
+  const res = await fetch(`${API_BASE_URL}${resourcePath}`, {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...init?.headers },
     ...init,
