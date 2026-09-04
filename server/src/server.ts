@@ -8,6 +8,8 @@ import { apiRouter } from './routes'
 import { errorHandler, notFoundHandler } from './middleware/error-handler'
 import { requestLogger } from './middleware/request-logger'
 
+console.log('[startup] 1/5: beginning portfolio-server initialization...')
+
 const app = express()
 
 // Trust reverse proxy (e.g. Render) for secure cookies and https protocol detection
@@ -47,6 +49,14 @@ app.get('/', (_req, res) => {
 
 app.use('/api', apiRouter)
 
+// Register top-level process crash handlers to prevent silent exits
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] uncaught exception:', err instanceof Error ? err.stack || err.message : err)
+})
+process.on('unhandledRejection', (reason) => {
+  console.error('[fatal] unhandled rejection:', reason instanceof Error ? reason.stack || reason.message : reason)
+})
+
 app.use(notFoundHandler)
 app.use(errorHandler)
 
@@ -54,13 +64,21 @@ async function start() {
   const PORT = Number(process.env.PORT) || env.port || 4000
   const HOST = '0.0.0.0'
 
+  console.log(`[startup] 3/5: server listen attempt on ${HOST}:${PORT}...`)
+
   // Bind the HTTP server immediately on 0.0.0.0 so Render detects the open port without delay
   const server = app.listen(PORT, HOST, () => {
     console.log(`[server] listening on http://${HOST}:${PORT} (${env.nodeEnv})`)
-    console.log(`[server] port ${PORT} bound successfully on ${HOST}`)
+    console.log(`[startup] 4/5: actual bound port: ${PORT} on ${HOST} — server healthy and listening`)
+  })
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    console.error(`[startup] server listen error on ${HOST}:${PORT}:`, err.message)
+    process.exit(1)
   })
 
   // Connect to database in the background without blocking port binding or health checks
+  console.log('[startup] 5/5: background database connection attempt initiated...')
   connectDatabase().catch((err) => {
     console.error(
       '[server] initial database connection failed — data routes will fail until MongoDB is reachable:',
@@ -81,3 +99,4 @@ async function start() {
 }
 
 start()
+

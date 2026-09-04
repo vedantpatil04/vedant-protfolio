@@ -33,11 +33,10 @@ function loadEnv() {
   const parsed = envSchema.safeParse(process.env)
 
   if (!parsed.success) {
-    console.error('[env] invalid environment variables:')
+    console.warn('[env] non-critical environment validation issues (using safe fallbacks):')
     for (const issue of parsed.error.issues) {
-      console.error(`  - ${issue.path.join('.')}: ${issue.message}`)
+      console.warn(`  - ${issue.path.join('.')}: ${issue.message}`)
     }
-    // Only exit if truly unparseable data types exist; otherwise continue with defaults
   }
 
   const data = parsed.success ? parsed.data : envSchema.parse({})
@@ -51,6 +50,7 @@ function loadEnv() {
     }
   }
 
+  console.log(`[startup] 2/5: environment validation completed (NODE_ENV: ${data.NODE_ENV})`)
   return data
 }
 

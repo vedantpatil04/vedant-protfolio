@@ -10,12 +10,26 @@ import { journeyRouter } from './journey.routes'
 import { messageRouter } from './message.routes'
 import { settingsRouter } from './settings.routes'
 import { githubRouter } from './github.routes'
+import mongoose from 'mongoose'
 import { ok } from '../types/api'
 
 export const apiRouter = Router()
 
 apiRouter.get('/health', (_req, res) => {
-  res.json(ok({ status: 'ok' }))
+  const dbStateMap: Record<number, string> = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  }
+  const dbStatus = dbStateMap[mongoose.connection.readyState] ?? 'disconnected'
+  res.json(
+    ok({
+      status: 'ok',
+      database: dbStatus,
+      uptime: process.uptime(),
+    }),
+  )
 })
 
 apiRouter.use('/auth', authRouter)

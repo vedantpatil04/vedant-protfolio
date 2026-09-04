@@ -2,6 +2,7 @@
   "name": "portfolio-server",
   "version": "0.1.0",
   "private": true,
+  "main": "dist/server.js",
   "description": "API server for the portfolio — Express + TypeScript + MongoDB, with JWT/cookie admin auth.",
   "scripts": {
     "dev": "tsx watch src/server.ts",

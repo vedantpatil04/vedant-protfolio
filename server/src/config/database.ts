@@ -27,9 +27,10 @@ export async function connectDatabase(): Promise<void> {
   mongoose.set('strictQuery', true)
 
   try {
+    console.log(`[database] attempting connection to ${maskUri(env.mongodbUri)}...`)
     await mongoose.connect(env.mongodbUri, { serverSelectionTimeoutMS: 5000 })
     connected = true
-    console.log(`[database] connected — ${maskUri(env.mongodbUri)}`)
+    console.log(`[database] connected successfully — ${maskUri(env.mongodbUri)}`)
   } catch (err) {
     console.error('[database] connection failed:', err instanceof Error ? err.message : err)
     throw err
