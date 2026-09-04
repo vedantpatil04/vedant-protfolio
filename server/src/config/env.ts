@@ -21,7 +21,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().min(1).default('mongodb://localhost:27017/portfolio'),
   JWT_SECRET: z.string().min(16).default('development-jwt-secret-min-16-chars-fallback'),
   JWT_EXPIRES_IN: z.string().default('7d'),
-  CLIENT_URL: z.string().default('http://localhost:5173'),
+  CLIENT_URL: z.string().default('https://vedant-protfolio1.vercel.app,http://localhost:5173'),
 
   // GitHub integration (Phase 7). Public profile/repo/activity data works
   // with just a username via the REST API. GITHUB_TOKEN is optional.
