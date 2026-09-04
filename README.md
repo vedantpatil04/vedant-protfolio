@@ -2,6 +2,7 @@
 
 Phase 1: frontend foundation & design system.
 Phase 2: backend, MongoDB data layer, and admin authentication.
+Production: Vercel frontend + Render backend integration.
 
 ## Stack
 
