@@ -37,20 +37,35 @@ app.use(express.json({ limit: '1mb' }))
 app.use(cookieParser())
 app.use(requestLogger)
 
+// Root and /health endpoints for platform health-check probes (e.g. Render)
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() })
+})
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', name: 'portfolio-server', health: '/api/health' })
+})
+
 app.use('/api', apiRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)
 
 async function start() {
-  try {
-    await connectDatabase()
-  } catch {
-    console.error('[server] starting without a database connection — data routes will fail until MongoDB is reachable')
-  }
+  const PORT = Number(process.env.PORT) || env.port || 4000
+  const HOST = '0.0.0.0'
 
-  const server = app.listen(env.port, () => {
-    console.log(`[server] listening on http://localhost:${env.port} (${env.nodeEnv})`)
+  // Bind the HTTP server immediately on 0.0.0.0 so Render detects the open port without delay
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`[server] listening on http://${HOST}:${PORT} (${env.nodeEnv})`)
+    console.log(`[server] port ${PORT} bound successfully on ${HOST}`)
+  })
+
+  // Connect to database in the background without blocking port binding or health checks
+  connectDatabase().catch((err) => {
+    console.error(
+      '[server] initial database connection failed — data routes will fail until MongoDB is reachable:',
+      err instanceof Error ? err.message : err,
+    )
   })
 
   const shutdown = async (signal: string) => {
