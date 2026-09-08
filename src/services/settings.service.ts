@@ -8,6 +8,7 @@ export interface SiteSettings {
   email?: string
   githubUrl?: string
   linkedinUrl?: string
+  leetcodeUrl?: string
   resumeUrl?: string
   profileImage?: string
   availability?: 'open-to-work' | 'open-to-freelance' | 'not-available'

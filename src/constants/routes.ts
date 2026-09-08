@@ -15,4 +15,34 @@ export const ROUTES = {
   resume: '/resume',
   adminLogin: '/admin/login',
   admin: '/admin',
+
+  adminProjects: '/admin/projects',
+  adminProjectNew: '/admin/projects/new',
+  adminProjectEdit: (id: string = ':id') => `/admin/projects/${id}/edit`,
+
+  adminCertificates: '/admin/certificates',
+  adminCertificateNew: '/admin/certificates/new',
+  adminCertificateEdit: (id: string = ':id') => `/admin/certificates/${id}/edit`,
+
+  adminAchievements: '/admin/achievements',
+  adminAchievementNew: '/admin/achievements/new',
+  adminAchievementEdit: (id: string = ':id') => `/admin/achievements/${id}/edit`,
+
+  adminJourney: '/admin/journey',
+  adminJourneyNew: '/admin/journey/new',
+  adminJourneyEdit: (id: string = ':id') => `/admin/journey/${id}/edit`,
+
+  adminSkills: '/admin/skills',
+  adminSkillNew: '/admin/skills/new',
+  adminSkillEdit: (id: string = ':id') => `/admin/skills/${id}/edit`,
+
+  adminEducation: '/admin/education',
+  adminEducationNew: '/admin/education/new',
+  adminEducationEdit: (id: string = ':id') => `/admin/education/${id}/edit`,
+
+  adminExperience: '/admin/experience',
+  adminExperienceNew: '/admin/experience/new',
+  adminExperienceEdit: (id: string = ':id') => `/admin/experience/${id}/edit`,
+
+  adminSettings: '/admin/settings',
 } as const

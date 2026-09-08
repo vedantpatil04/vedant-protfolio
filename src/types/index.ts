@@ -1,4 +1,5 @@
 export type { Project, ProjectStatus } from './project'
+export { PROJECT_STATUSES } from './project'
 export type { Certificate } from './certificate'
 export type { Achievement, AchievementCategory } from './achievement'
 export { ACHIEVEMENT_CATEGORIES } from './achievement'

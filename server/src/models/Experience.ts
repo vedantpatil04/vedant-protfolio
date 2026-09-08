@@ -11,7 +11,18 @@ const experienceSchema = new Schema(
     url: { type: String },
     order: { type: Number, default: 0 },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: Record<string, unknown>) => {
+        ret.id = String(ret._id)
+        delete ret._id
+        delete ret.__v
+        return ret
+      },
+    },
+  },
 )
 
 experienceSchema.index({ order: 1 })

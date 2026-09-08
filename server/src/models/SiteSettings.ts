@@ -15,6 +15,7 @@ const siteSettingsSchema = new Schema(
     email: { type: String },
     githubUrl: { type: String },
     linkedinUrl: { type: String },
+    leetcodeUrl: { type: String },
     resumeUrl: { type: String },
     profileImage: { type: String },
     availability: {

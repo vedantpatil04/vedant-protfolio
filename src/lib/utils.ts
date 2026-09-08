@@ -10,6 +10,20 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Converts a title into a URL-safe slug (lowercase, hyphen-separated,
+ * no leading/trailing/duplicate hyphens). Used by the admin Project
+ * form to suggest a slug from the title while still letting the
+ * person edit it directly.
+ */
+export function slugify(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+/**
  * Formats an ISO date string for display (e.g. "Mar 2026"). Returns
  * null for missing/invalid dates rather than rendering "Invalid Date" —
  * callers should treat null as "hide this field", never fabricate one.

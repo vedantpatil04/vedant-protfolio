@@ -25,6 +25,8 @@ export const buttonVariants = cva(
           'text-text-secondary hover:text-text hover:bg-surface-2',
         link:
           'text-accent underline-offset-4 hover:underline p-0 h-auto rounded-none',
+        danger:
+          'bg-red-600 text-white hover:bg-red-700',
       },
       size: {
         sm: 'h-8 px-3 text-xs',
