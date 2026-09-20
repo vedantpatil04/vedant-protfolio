@@ -21,11 +21,12 @@ const rawOrigins = env.clientUrl
   .map((url) => url.trim().replace(/\/+$/, ''))
   .filter(Boolean)
 
-// Ensure production Vercel domain, localhost, and local loopback are accepted for development and testing
+// Ensure production custom domain, localhost, and local loopback are accepted for development and testing
 const allowedOrigins = Array.from(
   new Set([
     ...rawOrigins,
-    'https://vedant-protfolio1.vercel.app',
+    'https://www.vedantpatil.co.in',
+    'https://vedantpatil.co.in',
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',

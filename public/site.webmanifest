@@ -1,0 +1,9 @@
+{
+  "name": "Vedant Patil — Full-Stack Developer",
+  "short_name": "Vedant Patil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "description": "Personal portfolio of Vedant Patil, a full-stack developer building modern web applications and software systems."
+}
