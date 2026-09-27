@@ -27,6 +27,14 @@ const envSchema = z.object({
   // with just a username via the REST API. GITHUB_TOKEN is optional.
   GITHUB_USERNAME: z.string().min(1).default('vedantpatil04'),
   GITHUB_TOKEN: z.string().optional(),
+
+  // Contact notifications (Phase 9). All optional — when RESEND_API_KEY or
+  // CONTACT_NOTIFICATION_EMAIL is missing, the contact form still validates,
+  // rate-limits and stores messages; it just skips sending the email (see
+  // services/email.service.ts) rather than failing the request.
+  RESEND_API_KEY: z.string().optional(),
+  CONTACT_NOTIFICATION_EMAIL: z.string().email().optional(),
+  EMAIL_FROM: z.string().default('Portfolio Contact <onboarding@resend.dev>'),
 })
 
 function loadEnv() {
@@ -48,6 +56,11 @@ function loadEnv() {
     if (data.JWT_SECRET.startsWith('development-')) {
       console.warn('[env] WARNING: JWT_SECRET not set in production. Admin auth sessions will not be secure until JWT_SECRET is provided in Render.')
     }
+    if (!data.RESEND_API_KEY || !data.CONTACT_NOTIFICATION_EMAIL) {
+      console.warn(
+        '[env] WARNING: RESEND_API_KEY and/or CONTACT_NOTIFICATION_EMAIL not set in production. Contact form submissions will be stored but no notification email will be sent.',
+      )
+    }
   }
 
   console.log(`[startup] 2/5: environment validation completed (NODE_ENV: ${data.NODE_ENV})`)
@@ -65,6 +78,9 @@ export const env = {
   clientUrl: parsedEnv.CLIENT_URL,
   githubUsername: parsedEnv.GITHUB_USERNAME,
   githubToken: parsedEnv.GITHUB_TOKEN,
+  resendApiKey: parsedEnv.RESEND_API_KEY,
+  contactNotificationEmail: parsedEnv.CONTACT_NOTIFICATION_EMAIL,
+  emailFrom: parsedEnv.EMAIL_FROM,
 } as const
 
 export const isProduction = env.nodeEnv === 'production'

@@ -70,6 +70,14 @@ npm run dev                # http://localhost:4000
 `npx node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
 is a quick way to generate one.
 
+To receive an email whenever someone submits the contact form, also
+set `RESEND_API_KEY` and `CONTACT_NOTIFICATION_EMAIL` (get a free key
+at [resend.com](https://resend.com)) and, once you've verified a
+sending domain there, `EMAIL_FROM`. All three are optional — without
+them the contact form still validates, rate-limits and stores
+messages for the admin inbox at `/admin/messages`; it just won't send
+the notification email.
+
 ### 3. Client
 
 ```bash
@@ -150,3 +158,32 @@ dashboard/CRUD UI, the public Contact page actually submitting to
 `POST /api/messages`, GitHub integration, file/image upload, and
 email notifications. `src/services/message.service.ts` already wraps
 the endpoint for whenever the Contact UI phase wires it up.
+
+## Phase 9 scope
+
+Built: the contact system end to end. `ContactSection` (rendered at
+`/contact` and on the homepage) now submits name/email/optional
+subject/message with client-side validation, a hidden honeypot field,
+and idle/submitting/success/error states that disable the submit
+button while a request is in flight. The backend independently
+re-validates every field, rate-limits `POST /api/messages` (5 / 15 min
+/ IP, stricter than the general API), and silently discards honeypot
+hits without persisting or emailing anything — a bot gets the same
+success response a real visitor would. Accepted messages are always
+saved to MongoDB first; a best-effort notification email then goes out
+via Resend's plain HTTPS API (`server/src/services/email.service.ts`,
+no SMTP client, no new dependency — the same `fetch`-based pattern
+`github.service.ts` already used). If the email fails or Resend isn't
+configured, the message is still stored and the visitor still gets a
+normal success response; the failure is only logged.
+
+The admin CMS gained the inbox Phase 8 didn't build: `/admin/messages`
+lists every submission (search, status filter, unread indicator),
+opening one marks it read and shows the full message in a slide-over
+with reply-by-email and status/delete controls, and the Overview page
+now surfaces an "Unread messages" count alongside the existing content
+counts.
+
+Not built yet (out of scope by design — see `PHASE 9 — CONTACT
+SYSTEM` §37): CAPTCHA, a visitor auto-reply, a second/duplicate inbox,
+and any contact analytics beyond the unread count on Overview.

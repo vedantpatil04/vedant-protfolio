@@ -7,6 +7,7 @@ import {
   educationService,
   experienceService,
   journeyService,
+  messageService,
 } from '@/services'
 
 export interface OverviewCounts {
@@ -17,6 +18,8 @@ export interface OverviewCounts {
   skills: number
   education: number
   experience: number
+  /** Unread contact messages — an actionable count, unlike the other totals above. */
+  unreadMessages: number
 }
 
 export interface RecentItem {
@@ -34,6 +37,7 @@ const ZERO_COUNTS: OverviewCounts = {
   skills: 0,
   education: 0,
   experience: 0,
+  unreadMessages: 0,
 }
 
 /**
@@ -50,7 +54,7 @@ export function useAdminOverview() {
     let cancelled = false
 
     async function load() {
-      const [projects, certificates, achievements, skills, education, experience, journey] =
+      const [projects, certificates, achievements, skills, education, experience, journey, messages] =
         await Promise.all([
           projectService.listAll().catch(() => []),
           certificateService.listAll().catch(() => []),
@@ -59,6 +63,7 @@ export function useAdminOverview() {
           educationService.list().catch(() => []),
           experienceService.list().catch(() => []),
           journeyService.list().catch(() => []),
+          messageService.list().catch(() => []),
         ])
 
       if (cancelled) return
@@ -71,6 +76,7 @@ export function useAdminOverview() {
         skills: skills.length,
         education: education.length,
         experience: experience.length,
+        unreadMessages: messages.filter((m) => m.status === 'unread').length,
       })
 
       const recentItems: RecentItem[] = [

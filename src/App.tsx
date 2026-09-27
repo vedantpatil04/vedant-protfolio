@@ -20,6 +20,7 @@ import Resume from '@/pages/Resume'
 import AdminLogin from '@/pages/admin/Login'
 import AdminOverview from '@/pages/admin/Overview'
 import AdminNotFound from '@/pages/admin/AdminNotFound'
+import MessageList from '@/pages/admin/messages/MessageList'
 import ProjectList from '@/pages/admin/projects/ProjectList'
 import ProjectForm from '@/pages/admin/projects/ProjectForm'
 import CertificateList from '@/pages/admin/certificates/CertificateList'
@@ -142,6 +143,8 @@ function AppRoutes() {
           }
         >
           <Route index element={<AdminOverview />} />
+
+          <Route path="messages" element={<MessageList />} />
 
           <Route path="projects" element={<ProjectList />} />
           <Route path="projects/new" element={<ProjectForm />} />

@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  Mail,
   FolderKanban,
   Award,
   Trophy,
@@ -18,9 +19,10 @@ export interface AdminNavItem {
   icon: LucideIcon
 }
 
-/** Sidebar order for the admin CMS — Phase 8 spec §4. */
+/** Sidebar order for the admin CMS — Phase 8 spec §4, Messages added in Phase 9. */
 export const ADMIN_NAV: AdminNavItem[] = [
   { label: 'Overview', href: ROUTES.admin, icon: LayoutDashboard },
+  { label: 'Messages', href: ROUTES.adminMessages, icon: Mail },
   { label: 'Projects', href: ROUTES.adminProjects, icon: FolderKanban },
   { label: 'Certificates', href: ROUTES.adminCertificates, icon: Award },
   { label: 'Achievements', href: ROUTES.adminAchievements, icon: Trophy },

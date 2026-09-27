@@ -9,6 +9,7 @@ import { ROUTES } from '@/constants/routes'
 import { formatRelativeTime } from '@/lib/utils'
 
 const COUNT_ITEMS = [
+  { key: 'unreadMessages' as const, label: 'Unread messages', href: ROUTES.adminMessages },
   { key: 'projects' as const, label: 'Projects', href: ROUTES.adminProjects },
   { key: 'certificates' as const, label: 'Certificates', href: ROUTES.adminCertificates },
   { key: 'achievements' as const, label: 'Achievements', href: ROUTES.adminAchievements },
