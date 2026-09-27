@@ -40,7 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [checkSession])
 
   const login = useCallback(async (input: LoginInput) => {
-    const me = await authService.login(input)
+    await authService.login(input)
+    // Server is the single source of truth: verify /api/auth/me succeeds with the newly set cookie
+    const me = await authService.me()
     setAdmin(me)
     setStatus('authenticated')
   }, [])

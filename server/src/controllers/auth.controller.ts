@@ -23,13 +23,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   await admin.save()
 
   const token = signAuthToken({ sub: String(admin._id), role: 'admin' })
-  setAuthCookie(res, token)
+  setAuthCookie(res, token, req)
 
   res.json(ok(toSafeAdmin(admin), 'Signed in'))
 })
 
-export const logout = asyncHandler(async (_req: Request, res: Response) => {
-  clearAuthCookie(res)
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+  clearAuthCookie(res, req)
   res.json(ok(null, 'Signed out'))
 })
 
