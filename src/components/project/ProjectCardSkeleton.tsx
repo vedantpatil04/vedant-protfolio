@@ -4,29 +4,20 @@ export interface ProjectCardSkeletonProps {
   first?: boolean
 }
 
+/** Mirrors ProjectCard's editorial row so loading → loaded doesn't shift layout. */
 export function ProjectCardSkeleton({ first = false }: ProjectCardSkeletonProps) {
   return (
-    <div className="border-b border-border py-8 sm:py-10">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[120px_1fr_auto] md:gap-8 items-start">
-        <Skeleton className="h-5 w-12" />
-        <div className="space-y-3">
-          <Skeleton className="h-7 w-64" />
-          <Skeleton className="h-5 w-full max-w-lg" />
-          <div className="flex gap-2 pt-1">
-            <Skeleton className="h-5 w-16" />
-            <Skeleton className="h-5 w-16" />
-            <Skeleton className="h-5 w-16" />
-          </div>
-        </div>
-        <div className="hidden md:block">
-          <Skeleton className="size-10 rounded-full" />
-        </div>
+    <div className="grid grid-cols-1 gap-7 border-t border-border py-8 sm:py-10 md:grid-cols-12 md:gap-10 lg:py-14">
+      <div className="flex flex-col gap-4 md:col-span-5">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-9 w-3/4" />
+        <Skeleton className="h-5 w-full" />
+        <Skeleton className="h-5 w-4/5" />
+        <Skeleton className="mt-2 h-4 w-1/2" />
       </div>
-      {first && (
-        <div className="mt-6">
-          <Skeleton className="aspect-video max-h-72 w-full rounded-md" />
-        </div>
-      )}
+      <div className="md:col-span-7">
+        <Skeleton className={first ? 'aspect-[16/10] w-full' : 'aspect-[16/10] w-full opacity-70'} />
+      </div>
     </div>
   )
 }

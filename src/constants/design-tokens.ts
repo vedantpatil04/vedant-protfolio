@@ -28,18 +28,20 @@ export const SPACING = {
 
 /** Standard section vertical rhythm, applied via the <Section> component. */
 export const SECTION_SPACING = {
-  mobile: '4.5rem',
+  mobile: '4rem',
   desktop: '7rem',
 } as const
 
 export const CONTAINER_PADDING = {
-  mobile: '1.5rem',
-  tablet: '2.5rem',
+  mobile: '1.25rem',
+  tablet: '2rem',
   desktop: '4rem',
 } as const
 
+/** Mirrors --duration-* in index.css and DURATION in lib/motion.ts (ms). */
 export const MOTION_DURATION = {
-  fast: 150,
-  base: 220,
-  slow: 420,
+  fast: 180,
+  base: 240,
+  medium: 550,
+  slow: 800,
 } as const

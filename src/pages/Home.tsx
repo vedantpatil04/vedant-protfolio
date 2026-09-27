@@ -14,6 +14,12 @@ import {
   ContactSection,
 } from '@/sections'
 
+/**
+ * One continuous narrative, numbered where numbering helps:
+ * Hero → Snapshot → 01 Selected work (+ further case studies) →
+ * 02 Skills → 03 Certificates → 04 Achievements → 05 Journey →
+ * 06 Education → 07 GitHub → 08 Problem solving → 09 Contact.
+ */
 export default function Home() {
   usePageTitle()
 
@@ -27,9 +33,9 @@ export default function Home() {
       <CertificateVault />
       <AchievementsSection />
       <DeveloperJourney />
-      <CodingDSA />
-      <GitHubActivity />
       <EducationSection />
+      <GitHubActivity />
+      <CodingDSA />
       <ContactSection />
     </>
   )

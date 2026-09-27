@@ -12,24 +12,26 @@ const PREVIEW_COUNT = 3
 export function CertificateVault() {
   const { certificates, loading, error } = useCertificates()
 
-  // Prefer certificates explicitly marked featured; if none are
-  // flagged yet, fall back to the most recent real ones rather than
-  // leaving the homepage section permanently empty. Never invents data.
+  // Featured certificates first, then the most recent real ones fill the
+  // remaining slots — the preview is always a full row when there's
+  // enough data, and never invents anything when there isn't.
   const featured = certificates.filter((certificate) => certificate.featured)
-  const preview = (featured.length > 0 ? featured : certificates).slice(0, PREVIEW_COUNT)
+  const rest = certificates.filter((certificate) => !certificate.featured)
+  const preview = [...featured, ...rest].slice(0, PREVIEW_COUNT)
 
   return (
-    <Section>
+    <Section id="certificates">
       <Reveal>
         <SectionHeader
+          index={3}
           eyebrow="Verified"
           title="Certificate Vault"
-          description="A few credentials from the journey so far."
+          description="Credentials from the journey so far — each one viewable in full."
           action={
             !loading && !error && certificates.length > 0 ? (
               <Button asChild variant="outline">
                 <Link to={ROUTES.certificates}>
-                  View all certificates
+                  {certificates.length > PREVIEW_COUNT ? `All ${certificates.length} certificates` : 'Open the vault'}
                   <ArrowUpRight className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -38,11 +40,12 @@ export function CertificateVault() {
         />
       </Reveal>
 
-      <div className="mt-10">
+      <div className="mt-10 sm:mt-14">
         {loading && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
-            <CertificateCardSkeleton />
-            <CertificateCardSkeleton />
+          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8">
+            {[0, 1, 2].map((i) => (
+              <CertificateCardSkeleton key={i} />
+            ))}
           </div>
         )}
 
@@ -53,14 +56,14 @@ export function CertificateVault() {
         )}
 
         {!loading && !error && preview.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8">
             {preview.map((certificate, i) => (
-              <Reveal key={certificate.id} delay={Math.min(i * 0.05, 0.15)}>
-                <CertificateCard
-                  certificate={certificate}
-                  large={i === 0}
-                  className={i === 0 ? 'sm:col-span-2' : undefined}
-                />
+              <Reveal
+                key={certificate.id}
+                delay={Math.min(i * 0.06, 0.18)}
+                className={preview.length === 3 && i === 2 ? 'sm:max-lg:hidden' : undefined}
+              >
+                <CertificateCard certificate={certificate} />
               </Reveal>
             ))}
           </div>

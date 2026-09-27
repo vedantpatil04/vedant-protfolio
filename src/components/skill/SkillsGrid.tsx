@@ -26,7 +26,7 @@ export function SkillsGrid({ skills, projects }: SkillsGridProps) {
   const categories = SKILL_CATEGORY_ORDER.filter((category) => (grouped.get(category)?.length ?? 0) > 0)
 
   return (
-    <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2">
       {categories.map((category) => (
         <SkillCategoryGroup key={category} category={category} skills={grouped.get(category) ?? []} projects={projects} />
       ))}

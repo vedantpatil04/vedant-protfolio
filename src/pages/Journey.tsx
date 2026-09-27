@@ -12,12 +12,12 @@ export default function Journey() {
   const currentFocus = entries.filter((entry) => entry.featured)
 
   return (
-    <Section className="min-h-[70vh]">
+    <Section className="min-h-[70vh] pt-12 sm:pt-16 lg:pt-20">
       <Reveal>
-        <SectionHeader eyebrow="Timeline" title="Developer Journey" description="How I got here." />
+        <SectionHeader titleAs="h1" eyebrow="Timeline" title="Developer Journey" description="How I got here — the chapters, in the order they happened." />
       </Reveal>
 
-      <div className="mt-12">
+      <div className="mt-12 sm:mt-16">
         {loading && <JourneyTimelineSkeleton />}
 
         {!loading && error && (
@@ -43,15 +43,17 @@ export default function Journey() {
         )}
 
         {!loading && !error && entries.length > 0 && (
-          <div className="flex flex-col gap-12">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
+            <div className="lg:col-span-8">
+              <JourneyTimeline entries={entries} />
+            </div>
             {currentFocus.length > 0 && (
-              <Reveal>
-                <CurrentFocus entries={currentFocus} />
+              <Reveal delay={0.1} className="order-first lg:order-none lg:col-span-4">
+                <div className="lg:sticky lg:top-28">
+                  <CurrentFocus entries={currentFocus} />
+                </div>
               </Reveal>
             )}
-            <Reveal delay={0.05}>
-              <JourneyTimeline entries={entries} />
-            </Reveal>
           </div>
         )}
       </div>

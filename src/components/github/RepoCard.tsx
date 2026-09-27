@@ -1,62 +1,59 @@
-import { Star, GitFork } from 'lucide-react'
+import { Star, GitFork, ArrowUpRight } from 'lucide-react'
 import type { GitHubRepoSummary } from '@/types'
-import { Card } from '@/components/ui'
-import { languageColor } from './language-color'
 
 export interface RepoCardProps {
   repo: GitHubRepoSummary
 }
 
+/**
+ * A repository as an editorial row (name, description, facts) rather
+ * than a dashboard tile. Every value is straight from the GitHub API
+ * summary — including zeros, which are shown as-is rather than hidden
+ * or rounded up.
+ */
 export function RepoCard({ repo }: RepoCardProps) {
   return (
-    <Card interactive className="flex h-full flex-col gap-3 p-5">
+    <li className="border-b border-border first:border-t">
       <a
         href={repo.htmlUrl}
         target="_blank"
         rel="noreferrer"
-        className="group flex flex-col gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+        className="nudge-icons group grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 py-5 focus-visible:outline-offset-2"
       >
-        <h3 className="font-mono text-body font-medium text-text group-hover:text-accent transition-colors break-words">
+        <h4 className="min-w-0 break-words font-mono text-body font-medium text-text transition-colors group-hover:text-accent">
           {repo.name}
-        </h3>
-        <p className="text-body-sm text-text-secondary line-clamp-2">
+          <span className="sr-only"> (opens GitHub in a new tab)</span>
+        </h4>
+        <ArrowUpRight className="mt-1 size-4 text-text-tertiary transition-colors group-hover:text-accent" aria-hidden="true" />
+
+        <p className="col-span-2 max-w-[60ch] text-body-sm text-text-secondary line-clamp-2">
           {repo.description ?? 'No description provided.'}
         </p>
-      </a>
 
-      {repo.topics.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <p className="col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-text-tertiary">
+          {repo.language && (
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-1.5 bg-accent" aria-hidden="true" />
+              {repo.language}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 tabular">
+            <Star className="size-3.5" aria-hidden="true" />
+            {repo.stars}
+            <span className="sr-only"> stars</span>
+          </span>
+          <span className="inline-flex items-center gap-1 tabular">
+            <GitFork className="size-3.5" aria-hidden="true" />
+            {repo.forks}
+            <span className="sr-only"> forks</span>
+          </span>
           {repo.topics.slice(0, 3).map((topic) => (
-            <span
-              key={topic}
-              className="rounded-sm bg-surface-2 px-1.5 py-0.5 text-caption text-text-tertiary"
-            >
-              {topic}
+            <span key={topic} className="font-mono">
+              #{topic}
             </span>
           ))}
-        </div>
-      )}
-
-      <div className="mt-auto flex items-center gap-4 pt-1 text-caption text-text-tertiary">
-        {repo.language && (
-          <span className="flex items-center gap-1.5">
-            <span
-              className="size-2.5 rounded-full"
-              style={{ backgroundColor: languageColor(repo.language) }}
-              aria-hidden="true"
-            />
-            {repo.language}
-          </span>
-        )}
-        <span className="flex items-center gap-1">
-          <Star className="size-3.5" aria-hidden="true" />
-          {repo.stars}
-        </span>
-        <span className="flex items-center gap-1">
-          <GitFork className="size-3.5" aria-hidden="true" />
-          {repo.forks}
-        </span>
-      </div>
-    </Card>
+        </p>
+      </a>
+    </li>
   )
 }

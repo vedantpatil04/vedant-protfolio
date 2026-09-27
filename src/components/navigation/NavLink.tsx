@@ -8,7 +8,12 @@ export interface NavLinkProps {
   onClick?: () => void
 }
 
-/** Primary nav item — underline slides in under the active route. */
+/**
+ * Primary nav item. The hairline underline half-draws on hover and
+ * fully draws (in accent) under the active route — hover and active
+ * states share one gesture rather than competing treatments.
+ * `aria-current="page"` is set by react-router on the active link.
+ */
 export function NavLink({ label, href, className, onClick }: NavLinkProps) {
   return (
     <RouterNavLink
@@ -16,7 +21,7 @@ export function NavLink({ label, href, className, onClick }: NavLinkProps) {
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          'relative py-1.5 text-body-sm font-medium text-text-secondary transition-colors duration-150',
+          'group relative py-2 text-body-sm font-medium text-text-secondary transition-colors duration-200',
           'hover:text-text',
           isActive && 'text-text',
           className,
@@ -28,8 +33,8 @@ export function NavLink({ label, href, className, onClick }: NavLinkProps) {
           {label}
           <span
             className={cn(
-              'absolute inset-x-0 -bottom-0.5 h-px scale-x-0 bg-accent transition-transform duration-200 ease-out origin-left',
-              isActive && 'scale-x-100',
+              'absolute inset-x-0 bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 ease-[var(--ease-out-expo)]',
+              isActive ? 'scale-x-100 bg-accent' : 'bg-text-tertiary group-hover:scale-x-100',
             )}
             aria-hidden="true"
           />

@@ -1,23 +1,22 @@
-import { Divider, Skeleton } from '@/components/ui'
+import { Skeleton } from '@/components/ui'
 
+/** Mirrors AchievementTimeline's year rail + entries layout. */
 export function AchievementTimelineSkeleton() {
   return (
-    <div className="flex flex-col">
-      <Skeleton className="mb-3 h-8 w-16" />
-      <Divider />
-      {[0, 1, 2].map((i) => (
-        <div key={i}>
-          <div className="flex flex-col gap-3 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
-            <div className="flex flex-1 flex-col gap-3">
-              <Skeleton className="h-7 w-56" />
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-4 w-full max-w-md" />
-            </div>
-            <Skeleton className="h-4 w-16 shrink-0" />
+    <div className="grid grid-cols-1 border-t border-border lg:grid-cols-12 lg:gap-10">
+      <div className="pb-2 pt-6 lg:col-span-3 lg:pt-8">
+        <Skeleton className="h-10 w-24" />
+      </div>
+      <div className="lg:col-span-9">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex flex-col gap-3 border-b border-border py-7 last:border-b-0 lg:py-8">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-7 w-64" />
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-4 w-full max-w-md" />
           </div>
-          <Divider />
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

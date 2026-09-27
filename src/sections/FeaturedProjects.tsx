@@ -19,11 +19,13 @@ export function FeaturedProjects() {
   const showEmpty = !loading && (error || projects.length === 0)
 
   return (
-    <Section>
+    <Section id="work">
       <Reveal>
         <SectionHeader
+          index={1}
           eyebrow="Selected work"
           title="Featured Projects"
+          description="Products built end to end — from the interface down to the data."
           action={
             <Button asChild variant="outline">
               <Link to={ROUTES.projects}>
@@ -35,9 +37,14 @@ export function FeaturedProjects() {
         />
       </Reveal>
 
-      <div className="mt-10">
-        {loading &&
-          [0, 1].map((i) => <ProjectCardSkeleton key={i} first={i === 0} />)}
+      <div className="mt-10 sm:mt-14">
+        {loading && (
+          <div className="border-b border-border">
+            {[0, 1].map((i) => (
+              <ProjectCardSkeleton key={i} first={i === 0} />
+            ))}
+          </div>
+        )}
 
         {showEmpty && (
           <Reveal delay={0.05}>
@@ -49,13 +56,15 @@ export function FeaturedProjects() {
           </Reveal>
         )}
 
-        {!loading &&
-          !showEmpty &&
-          projects.map((project, i) => (
-            <Reveal key={project.id} delay={Math.min(i * 0.05, 0.15)}>
-              <ProjectCard project={project} index={i} priority={i === 0} />
-            </Reveal>
-          ))}
+        {!loading && !showEmpty && (
+          <div className="border-b border-border">
+            {projects.map((project, i) => (
+              <Reveal key={project.id}>
+                <ProjectCard project={project} index={i} priority={i === 0} />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
     </Section>
   )

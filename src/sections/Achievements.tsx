@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Trophy } from 'lucide-react'
 import { Section } from '@/components/layout'
-import { SectionHeader, EmptyState, Button } from '@/components/ui'
+import { SectionHeader, EmptyState, Button, Skeleton } from '@/components/ui'
 import { Reveal } from '@/components/shared'
 import { useAchievements } from '@/hooks/useAchievements'
 import { ROUTES } from '@/constants/routes'
 import { AchievementPreviewRow } from '@/components/achievement'
-import { Skeleton } from '@/components/ui'
 
 const PREVIEW_COUNT = 3
 
@@ -15,9 +14,10 @@ export function AchievementsSection() {
   const preview = achievements.slice(0, PREVIEW_COUNT)
 
   return (
-    <Section>
+    <Section id="achievements">
       <Reveal>
         <SectionHeader
+          index={4}
           eyebrow="Recognition"
           title="Achievements"
           description="Milestones beyond the code."
@@ -34,11 +34,11 @@ export function AchievementsSection() {
         />
       </Reveal>
 
-      <div className="mt-10">
+      <div className="mt-10 sm:mt-14">
         {loading && (
-          <div className="flex flex-col">
-            <Skeleton className="h-10 w-full max-w-md" />
-            <Skeleton className="mt-4 h-10 w-full max-w-md" />
+          <div className="flex flex-col gap-5 border-t border-border pt-5">
+            <Skeleton className="h-7 w-full max-w-lg" />
+            <Skeleton className="h-7 w-full max-w-md" />
           </div>
         )}
 
@@ -50,11 +50,11 @@ export function AchievementsSection() {
 
         {!loading && !error && preview.length > 0 && (
           <Reveal delay={0.05}>
-            <div className="flex flex-col">
+            <ul>
               {preview.map((achievement) => (
                 <AchievementPreviewRow key={achievement.id} achievement={achievement} />
               ))}
-            </div>
+            </ul>
           </Reveal>
         )}
       </div>

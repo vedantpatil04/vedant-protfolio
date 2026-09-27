@@ -7,46 +7,58 @@
  * DESIGN TOKENS
  * Single source of truth for color, type, radius and motion.
  * Do not hardcode raw hex/px values in components — reference these tokens.
+ *
+ * Phase 10: both themes were re-tuned so every text token clears WCAG AA
+ * (4.5:1) on bg, surface and surface-2. Light is a designed warm-paper
+ * palette with its own deeper gold, not an inversion of dark.
  * ---------------------------------------------------------------------- */
 
 :root {
   /* Light theme (default values; overridden by .dark below) */
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --surface-2: #f1f1ee;
-  --border: #e1e1dc;
-  --border-strong: #cbcbc4;
+  --bg: #f5f3ee;
+  --surface: #fbfaf7;
+  --surface-2: #ebe8e0;
+  --border: #dedad0;
+  --border-strong: #c6c1b4;
 
-  --text: #15171a;
-  --text-secondary: #54585f;
-  --text-tertiary: #82858c;
+  --text: #15161a;
+  --text-secondary: #474a51;
+  --text-tertiary: #63666d;
 
-  --accent: #a97c14;
-  --accent-hover: #8e6810;
+  --accent: #8a6410;
+  --accent-hover: #74540c;
   --accent-ink: #ffffff;
   --accent-2: #3e6280;
 
-  --focus-ring: #a97c14;
+  --success: #1f7a52;
+  --danger: #b3261e;
 
-  --shadow-color: 20 14% 4%;
+  --overlay: rgb(21 22 26 / 0.42);
+  --focus-ring: #8a6410;
+
+  --shadow-color: 32 20% 20%;
 }
 
 .dark {
   --bg: #0a0b0d;
-  --surface: #131519;
-  --surface-2: #1b1e23;
-  --border: #24272d;
-  --border-strong: #34383f;
+  --surface: #111317;
+  --surface-2: #181a1f;
+  --border: #22252b;
+  --border-strong: #33373e;
 
-  --text: #f2f3f5;
-  --text-secondary: #9498a2;
-  --text-tertiary: #62666f;
+  --text: #f2f1ee;
+  --text-secondary: #9ca0a9;
+  --text-tertiary: #80848e;
 
   --accent: #e3b341;
-  --accent-hover: #f2c463;
+  --accent-hover: #f0c35c;
   --accent-ink: #14110a;
   --accent-2: #7fa0b8;
 
+  --success: #4fbf8b;
+  --danger: #f07167;
+
+  --overlay: rgb(0 0 0 / 0.66);
   --focus-ring: #e3b341;
 
   --shadow-color: 0 0% 0%;
@@ -69,6 +81,10 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-2: var(--accent-2);
 
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-overlay: var(--overlay);
+
   --color-focus-ring: var(--focus-ring);
 
   /* Typography */
@@ -81,12 +97,14 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
 
-  /* Motion */
+  /* Motion — fast = micro-interactions, medium = reveals, slow = major transitions */
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 150ms;
-  --duration-base: 220ms;
-  --duration-slow: 420ms;
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --duration-fast: 180ms;
+  --duration-base: 240ms;
+  --duration-medium: 550ms;
+  --duration-slow: 800ms;
 
   /* Custom breakpoint used by a few components */
   --breakpoint-xs: 22.5rem; /* 360px */
@@ -152,6 +170,31 @@
   }
 }
 
+/* Centered dialogs (certificate viewer, modal) — short fade + settle.
+ * Only a relative offset: centering uses Tailwind's `translate` property,
+ * which composes with `transform`, so it must not be repeated here. */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dialog-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -160,6 +203,7 @@
   html {
     scroll-behavior: smooth;
     overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -168,6 +212,7 @@
     font-family: var(--font-body);
     font-feature-settings: "ss01" 1, "cv01" 1;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: clip;
     max-width: 100vw;
@@ -181,17 +226,31 @@
   /* Visible, deliberate focus states everywhere — never suppressed */
   :focus-visible {
     outline: 2px solid var(--color-focus-ring);
-    outline-offset: 2px;
+    outline-offset: 3px;
     border-radius: 2px;
   }
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   code, kbd, samp, pre {
     font-family: var(--font-mono);
+  }
+
+  /* Anchored sections land below the sticky navbar, not under it. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  img {
+    color: transparent; /* hides alt-text flash while decoding */
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -207,44 +266,116 @@
   }
 }
 
+@layer components {
+  /* ---------------------------------------------------------------------
+   * One interaction language for arrows/icons inside buttons and links:
+   * on hover the directional icon nudges in its own direction. Applied
+   * automatically by <Button> and by `.link-arrow`. Never scales.
+   * ------------------------------------------------------------------ */
+  .nudge-icons :is(.lucide-arrow-right, .lucide-arrow-up-right, .lucide-arrow-left, .lucide-external-link, .lucide-arrow-down) {
+    transition: transform var(--duration-base) var(--ease-out-expo);
+  }
+  .nudge-icons:hover .lucide-arrow-right,
+  .group:hover .nudge-icons .lucide-arrow-right {
+    transform: translateX(3px);
+  }
+  .nudge-icons:hover .lucide-arrow-left {
+    transform: translateX(-3px);
+  }
+  .nudge-icons:hover :is(.lucide-arrow-up-right, .lucide-external-link),
+  .group:hover .nudge-icons :is(.lucide-arrow-up-right, .lucide-external-link) {
+    transform: translate(2px, -2px);
+  }
+  .nudge-icons:hover .lucide-arrow-down {
+    transform: translateY(3px);
+  }
+
+  /* Underline that draws in from the left on hover/focus — for inline text links. */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    padding-bottom: 1px;
+    transition:
+      background-size var(--duration-base) var(--ease-out-expo),
+      color var(--duration-fast) var(--ease-standard);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible,
+  .group:hover .link-underline {
+    background-size: 100% 1px;
+  }
+
+  /* Text link with an arrow — combines underline reveal + icon nudge. */
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+}
+
 @layer utilities {
   /* Type scale — used sparingly and consistently instead of ad-hoc text-* stacking */
   .text-display {
     font-family: var(--font-display);
     font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
-    font-size: clamp(2.125rem, 1.75rem + 3.2vw, 5.25rem);
-    word-wrap: break-word;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    font-size: clamp(2.5rem, 1.6rem + 4.4vw, 6rem);
     overflow-wrap: break-word;
+  }
+  /* Hero-only name scale. Words never break mid-word; they wrap as units. */
+  .text-hero {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    font-size: clamp(3.1rem, 0.9rem + 11vw, 6.25rem);
+  }
+  @media (min-width: 1024px) {
+    .text-hero {
+      font-size: clamp(5.5rem, 10.6vw, 10rem);
+    }
   }
   .text-h1 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.1;
-    font-size: clamp(1.875rem, 1.55rem + 1.6vw, 3.25rem);
-    word-wrap: break-word;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+    font-size: clamp(2.25rem, 1.6rem + 2.8vw, 4.25rem);
     overflow-wrap: break-word;
   }
   .text-h2 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    font-size: clamp(1.75rem, 1.55rem + 0.9vw, 2.375rem);
+    font-weight: 800;
+    letter-spacing: -0.028em;
+    line-height: 1.06;
+    font-size: clamp(1.95rem, 1.45rem + 2vw, 3.25rem);
+    overflow-wrap: break-word;
   }
   .text-h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.015em;
-    line-height: 1.25;
-    font-size: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+    letter-spacing: -0.018em;
+    line-height: 1.22;
+    font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.5rem);
+  }
+  .text-lead {
+    font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
+    line-height: 1.55;
+    font-weight: 400;
+    letter-spacing: -0.005em;
   }
   .text-body-lg {
-    font-size: 1.125rem;
-    line-height: 1.65;
+    font-size: 1.0625rem;
+    line-height: 1.7;
     font-weight: 400;
+  }
+  @media (min-width: 640px) {
+    .text-body-lg {
+      font-size: 1.125rem;
+    }
   }
   .text-body {
     font-size: 1rem;
@@ -265,7 +396,7 @@
   .text-label {
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    line-height: 1;
+    line-height: 1.2;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -274,5 +405,8 @@
     font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.6;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }

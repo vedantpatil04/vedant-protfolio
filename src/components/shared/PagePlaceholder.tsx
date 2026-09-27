@@ -26,9 +26,9 @@ export function PagePlaceholder({
   emptyDescription,
 }: PagePlaceholderProps) {
   return (
-    <Section className="min-h-[60vh]">
+    <Section className="min-h-[60vh] pt-12 sm:pt-16 lg:pt-20">
       <Reveal>
-        <SectionHeader eyebrow={eyebrow} title={title} description={description} />
+        <SectionHeader titleAs="h1" eyebrow={eyebrow} title={title} description={description} />
       </Reveal>
       <div className="mt-10">
         <Reveal delay={0.05}>

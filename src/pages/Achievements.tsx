@@ -11,12 +11,12 @@ export default function Achievements() {
   const { achievements, loading, error, reload } = useAchievements()
 
   return (
-    <Section className="min-h-[70vh]">
+    <Section className="min-h-[70vh] pt-12 sm:pt-16 lg:pt-20">
       <Reveal>
-        <SectionHeader eyebrow="Recognition" title="Achievements" description="Milestones beyond the code." />
+        <SectionHeader titleAs="h1" eyebrow="Recognition" title="Achievements" description="Milestones beyond the code." />
       </Reveal>
 
-      <div className="mt-12">
+      <div className="mt-12 sm:mt-16">
         {loading && <AchievementTimelineSkeleton />}
 
         {!loading && error && (
@@ -42,9 +42,7 @@ export default function Achievements() {
         )}
 
         {!loading && !error && achievements.length > 0 && (
-          <Reveal delay={0.05}>
-            <AchievementTimeline achievements={achievements} />
-          </Reveal>
+          <AchievementTimeline achievements={achievements} />
         )}
       </div>
     </Section>

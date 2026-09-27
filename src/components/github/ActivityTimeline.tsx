@@ -16,6 +16,7 @@ export interface ActivityTimelineProps {
   items: ActivityItem[]
 }
 
+/** Real public events, newest first — each row links to the event on GitHub when a URL exists. */
 export function ActivityTimeline({ items }: ActivityTimelineProps) {
   if (items.length === 0) return null
 
@@ -26,27 +27,29 @@ export function ActivityTimeline({ items }: ActivityTimelineProps) {
         const relative = formatRelativeTime(item.createdAt)
         const content = (
           <>
-            <Icon className="size-4 shrink-0 text-text-tertiary" aria-hidden="true" />
-            <span className="flex-1 text-body-sm text-text min-w-0 break-words">{item.summary}</span>
+            <Icon className="mt-0.5 size-4 shrink-0 text-text-tertiary transition-colors group-hover:text-accent" aria-hidden="true" />
+            <span className="min-w-0 flex-1 break-words text-body-sm text-text">{item.summary}</span>
             {relative && (
-              <span className="shrink-0 font-mono text-caption text-text-tertiary">{relative}</span>
+              <time dateTime={item.createdAt} className="shrink-0 font-mono text-caption text-text-tertiary tabular">
+                {relative}
+              </time>
             )}
           </>
         )
 
         return (
-          <li key={item.id} className="border-b border-border py-3.5 last:border-b-0">
+          <li key={item.id} className="border-b border-border last:border-b-0">
             {item.url ? (
               <a
                 href={item.url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+                className="group flex items-start gap-3 rounded-sm py-3.5 transition-colors hover:text-accent"
               >
                 {content}
               </a>
             ) : (
-              <div className="flex items-center gap-3">{content}</div>
+              <div className="flex items-start gap-3 py-3.5">{content}</div>
             )}
           </li>
         )

@@ -1,10 +1,13 @@
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { TooltipProvider } from '@/components/ui/Tooltip'
+import { Loading } from '@/components/ui'
 import { Navbar } from '@/components/navigation'
 import { Footer } from '@/components/layout'
 import { ScrollToTop, PageTransition, RequireAuth } from '@/components/shared'
-import { AdminLayout } from '@/components/admin'
+import { IntroProvider, IntroSequence } from '@/components/intro'
+import { useIntro } from '@/hooks/useIntro'
 import { ROUTES } from '@/constants/routes'
 
 import Home from '@/pages/Home'
@@ -17,32 +20,61 @@ import Achievements from '@/pages/Achievements'
 import Journey from '@/pages/Journey'
 import Contact from '@/pages/Contact'
 import Resume from '@/pages/Resume'
-import AdminLogin from '@/pages/admin/Login'
-import AdminOverview from '@/pages/admin/Overview'
-import AdminNotFound from '@/pages/admin/AdminNotFound'
-import MessageList from '@/pages/admin/messages/MessageList'
-import ProjectList from '@/pages/admin/projects/ProjectList'
-import ProjectForm from '@/pages/admin/projects/ProjectForm'
-import CertificateList from '@/pages/admin/certificates/CertificateList'
-import CertificateForm from '@/pages/admin/certificates/CertificateForm'
-import AchievementList from '@/pages/admin/achievements/AchievementList'
-import AchievementForm from '@/pages/admin/achievements/AchievementForm'
-import JourneyList from '@/pages/admin/journey/JourneyList'
-import JourneyForm from '@/pages/admin/journey/JourneyForm'
-import SkillList from '@/pages/admin/skills/SkillList'
-import SkillForm from '@/pages/admin/skills/SkillForm'
-import EducationList from '@/pages/admin/education/EducationList'
-import EducationForm from '@/pages/admin/education/EducationForm'
-import ExperienceList from '@/pages/admin/experience/ExperienceList'
-import ExperienceForm from '@/pages/admin/experience/ExperienceForm'
-import SettingsPage from '@/pages/admin/settings/SettingsPage'
 import NotFound from '@/pages/NotFound'
+
+/*
+ * Phase 10 performance: the admin CMS (layout, forms, tables) is split
+ * into its own chunks. Public visitors never download it; the admin
+ * routes, auth guard and behavior are otherwise unchanged.
+ */
+const AdminLayout = lazy(() => import('@/components/admin/AdminLayout').then((m) => ({ default: m.AdminLayout })))
+const AdminLogin = lazy(() => import('@/pages/admin/Login'))
+const AdminOverview = lazy(() => import('@/pages/admin/Overview'))
+const AdminNotFound = lazy(() => import('@/pages/admin/AdminNotFound'))
+const ProjectList = lazy(() => import('@/pages/admin/projects/ProjectList'))
+const ProjectForm = lazy(() => import('@/pages/admin/projects/ProjectForm'))
+const CertificateList = lazy(() => import('@/pages/admin/certificates/CertificateList'))
+const CertificateForm = lazy(() => import('@/pages/admin/certificates/CertificateForm'))
+const AchievementList = lazy(() => import('@/pages/admin/achievements/AchievementList'))
+const AchievementForm = lazy(() => import('@/pages/admin/achievements/AchievementForm'))
+const JourneyList = lazy(() => import('@/pages/admin/journey/JourneyList'))
+const JourneyForm = lazy(() => import('@/pages/admin/journey/JourneyForm'))
+const SkillList = lazy(() => import('@/pages/admin/skills/SkillList'))
+const SkillForm = lazy(() => import('@/pages/admin/skills/SkillForm'))
+const EducationList = lazy(() => import('@/pages/admin/education/EducationList'))
+const EducationForm = lazy(() => import('@/pages/admin/education/EducationForm'))
+const ExperienceList = lazy(() => import('@/pages/admin/experience/ExperienceList'))
+const ExperienceForm = lazy(() => import('@/pages/admin/experience/ExperienceForm'))
+const SettingsPage = lazy(() => import('@/pages/admin/settings/SettingsPage'))
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <Loading label="Loading" />
+    </div>
+  )
+}
+
+/** Suspense boundary per lazy route so the admin shell never flashes out on navigation. */
+function Lazy({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<RouteFallback />}>{children}</Suspense>
+}
+
+/**
+ * Scroll resets happen once the outgoing page has faded out (not the
+ * moment the URL changes), so the old page never visibly jumps to the
+ * top mid-transition. Hash targets are handled by <ScrollToTop />.
+ */
+function resetScroll() {
+  if (window.location.hash) return
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+}
 
 function AppRoutes() {
   const location = useLocation()
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait" initial={false} onExitComplete={resetScroll}>
       <Routes location={location} key={location.pathname}>
         <Route
           path={ROUTES.home}
@@ -128,7 +160,9 @@ function AppRoutes() {
           path={ROUTES.adminLogin}
           element={
             <PageTransition>
-              <AdminLogin />
+              <Lazy>
+                <AdminLogin />
+              </Lazy>
             </PageTransition>
           }
         />
@@ -138,45 +172,45 @@ function AppRoutes() {
           path={ROUTES.admin}
           element={
             <RequireAuth>
-              <AdminLayout />
+              <Lazy>
+                <AdminLayout />
+              </Lazy>
             </RequireAuth>
           }
         >
-          <Route index element={<AdminOverview />} />
+          <Route index element={<Lazy><AdminOverview /></Lazy>} />
 
-          <Route path="messages" element={<MessageList />} />
+          <Route path="projects" element={<Lazy><ProjectList /></Lazy>} />
+          <Route path="projects/new" element={<Lazy><ProjectForm /></Lazy>} />
+          <Route path="projects/:id/edit" element={<Lazy><ProjectForm /></Lazy>} />
 
-          <Route path="projects" element={<ProjectList />} />
-          <Route path="projects/new" element={<ProjectForm />} />
-          <Route path="projects/:id/edit" element={<ProjectForm />} />
+          <Route path="certificates" element={<Lazy><CertificateList /></Lazy>} />
+          <Route path="certificates/new" element={<Lazy><CertificateForm /></Lazy>} />
+          <Route path="certificates/:id/edit" element={<Lazy><CertificateForm /></Lazy>} />
 
-          <Route path="certificates" element={<CertificateList />} />
-          <Route path="certificates/new" element={<CertificateForm />} />
-          <Route path="certificates/:id/edit" element={<CertificateForm />} />
+          <Route path="achievements" element={<Lazy><AchievementList /></Lazy>} />
+          <Route path="achievements/new" element={<Lazy><AchievementForm /></Lazy>} />
+          <Route path="achievements/:id/edit" element={<Lazy><AchievementForm /></Lazy>} />
 
-          <Route path="achievements" element={<AchievementList />} />
-          <Route path="achievements/new" element={<AchievementForm />} />
-          <Route path="achievements/:id/edit" element={<AchievementForm />} />
+          <Route path="journey" element={<Lazy><JourneyList /></Lazy>} />
+          <Route path="journey/new" element={<Lazy><JourneyForm /></Lazy>} />
+          <Route path="journey/:id/edit" element={<Lazy><JourneyForm /></Lazy>} />
 
-          <Route path="journey" element={<JourneyList />} />
-          <Route path="journey/new" element={<JourneyForm />} />
-          <Route path="journey/:id/edit" element={<JourneyForm />} />
+          <Route path="skills" element={<Lazy><SkillList /></Lazy>} />
+          <Route path="skills/new" element={<Lazy><SkillForm /></Lazy>} />
+          <Route path="skills/:id/edit" element={<Lazy><SkillForm /></Lazy>} />
 
-          <Route path="skills" element={<SkillList />} />
-          <Route path="skills/new" element={<SkillForm />} />
-          <Route path="skills/:id/edit" element={<SkillForm />} />
+          <Route path="education" element={<Lazy><EducationList /></Lazy>} />
+          <Route path="education/new" element={<Lazy><EducationForm /></Lazy>} />
+          <Route path="education/:id/edit" element={<Lazy><EducationForm /></Lazy>} />
 
-          <Route path="education" element={<EducationList />} />
-          <Route path="education/new" element={<EducationForm />} />
-          <Route path="education/:id/edit" element={<EducationForm />} />
+          <Route path="experience" element={<Lazy><ExperienceList /></Lazy>} />
+          <Route path="experience/new" element={<Lazy><ExperienceForm /></Lazy>} />
+          <Route path="experience/:id/edit" element={<Lazy><ExperienceForm /></Lazy>} />
 
-          <Route path="experience" element={<ExperienceList />} />
-          <Route path="experience/new" element={<ExperienceForm />} />
-          <Route path="experience/:id/edit" element={<ExperienceForm />} />
+          <Route path="settings" element={<Lazy><SettingsPage /></Lazy>} />
 
-          <Route path="settings" element={<SettingsPage />} />
-
-          <Route path="*" element={<AdminNotFound />} />
+          <Route path="*" element={<Lazy><AdminNotFound /></Lazy>} />
         </Route>
 
         <Route
@@ -192,20 +226,44 @@ function AppRoutes() {
   )
 }
 
-export default function App() {
+function AppShell() {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
+  const { phase } = useIntro()
+  const introActive = phase === 'playing'
 
   return (
     <TooltipProvider>
-      <div className="flex min-h-dvh flex-col">
+      {!isAdminRoute && (
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[95] focus:rounded-md focus:bg-accent focus:px-4 focus:py-2.5 focus:text-body-sm focus:font-medium focus:text-accent-ink"
+        >
+          Skip to content
+        </a>
+      )}
+
+      {/* While the intro is on screen the page underneath stays in the DOM (SEO) but is inert. */}
+      <div className="flex min-h-dvh flex-col" inert={introActive}>
         <ScrollToTop />
         {!isAdminRoute && <Navbar />}
-        <main className="flex-1">
+        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
           <AppRoutes />
         </main>
         {!isAdminRoute && <Footer />}
       </div>
+
+      {!isAdminRoute && <IntroSequence />}
     </TooltipProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <IntroProvider>
+      <MotionConfig reducedMotion="user">
+        <AppShell />
+      </MotionConfig>
+    </IntroProvider>
   )
 }

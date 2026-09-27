@@ -1,5 +1,37 @@
 import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
+
+/**
+ * tailwind-merge doesn't know the project's custom type-scale utilities
+ * (defined in index.css), so by default it reads e.g. `text-h2` or
+ * `text-body-sm` as a *color* class and silently drops it when a real
+ * color like `text-text` appears in the same cn() call. Registering them
+ * as font sizes keeps size and color from cancelling each other out.
+ */
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      'font-size': [
+        {
+          text: [
+            'display',
+            'hero',
+            'h1',
+            'h2',
+            'h3',
+            'lead',
+            'body-lg',
+            'body',
+            'body-sm',
+            'caption',
+            'label',
+            'code',
+          ],
+        },
+      ],
+    },
+  },
+})
 
 /**
  * Merge Tailwind class names safely, resolving conflicting utility

@@ -2,25 +2,26 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowLeft } from 'lucide-react'
 import type { Project } from '@/types'
 import { ROUTES } from '@/constants/routes'
-import { Button } from '@/components/ui'
 
 export interface NextProjectNavProps {
   current: Project
   projects: Project[]
 }
 
+/** Closing navigation for a case study: back to the index, or straight on to the next story. */
 export function NextProjectNav({ current, projects }: NextProjectNavProps) {
+  const backLink = (
+    <Link
+      to={ROUTES.projects}
+      className="nudge-icons inline-flex min-h-11 items-center gap-2 text-body-sm font-medium text-text-secondary transition-colors hover:text-text"
+    >
+      <ArrowLeft className="size-4" aria-hidden="true" />
+      <span className="link-underline">All projects</span>
+    </Link>
+  )
+
   if (!projects || projects.length <= 1) {
-    return (
-      <div className="flex items-center justify-between border-t border-border pt-8">
-        <Button asChild variant="outline">
-          <Link to={ROUTES.projects}>
-            <ArrowLeft className="size-4" aria-hidden="true" />
-            All projects
-          </Link>
-        </Button>
-      </div>
-    )
+    return <div className="border-t border-border pt-8">{backLink}</div>
   }
 
   const currentIndex = projects.findIndex((p) => p.id === current.id || p.slug === current.slug)
@@ -30,26 +31,25 @@ export function NextProjectNav({ current, projects }: NextProjectNavProps) {
       : projects[0]
 
   return (
-    <div className="flex flex-col gap-4 border-t border-border pt-10 sm:flex-row sm:items-center sm:justify-between">
-      <Button asChild variant="ghost">
-        <Link to={ROUTES.projects}>
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          All projects
-        </Link>
-      </Button>
-
+    <div className="flex flex-col gap-8 border-t border-border pt-8">
       {nextProject && nextProject.id !== current.id && (
         <Link
           to={ROUTES.projectDetail(nextProject.slug)}
-          className="group flex flex-col items-start gap-1 rounded-md border border-border p-4 transition-colors hover:border-accent hover:bg-surface-2 sm:items-end"
+          className="nudge-icons group relative flex flex-col gap-3 border-b border-border pb-10"
         >
-          <span className="text-caption text-text-tertiary">Next Project</span>
-          <span className="flex items-center gap-2 font-display text-body font-semibold text-text group-hover:text-accent">
-            {nextProject.title}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          <span className="text-label text-text-tertiary">Next case study</span>
+          <span className="flex items-center justify-between gap-6">
+            <span className="font-display text-[clamp(2rem,1.3rem+3.2vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-text transition-[color,transform] duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-1.5 group-hover:text-accent">
+              {nextProject.title}
+            </span>
+            <ArrowRight className="size-6 shrink-0 text-text-tertiary group-hover:text-accent sm:size-8" aria-hidden="true" />
           </span>
+          {nextProject.shortDescription && (
+            <span className="max-w-[56ch] text-body text-text-secondary line-clamp-2">{nextProject.shortDescription}</span>
+          )}
         </Link>
       )}
+      {backLink}
     </div>
   )
 }

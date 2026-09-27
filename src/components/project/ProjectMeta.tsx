@@ -1,11 +1,16 @@
-import { Calendar, CheckCircle2, Globe, Code2, Layers } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import type { Project } from '@/types'
-import { Badge } from '@/components/ui'
+import { PROJECT_STATUS_LABELS } from '@/constants/content-labels'
+import { CornerBrackets } from '@/components/shared'
 
 export interface ProjectMetaProps {
   project: Project
 }
 
+/**
+ * Case-study fact sheet — the same corner-bracket "system panel"
+ * language as the Hero, holding only fields the project record has.
+ */
 export function ProjectMeta({ project }: ProjectMetaProps) {
   const formattedDate = project.createdAt
     ? new Date(project.createdAt).toLocaleDateString('en-US', {
@@ -14,65 +19,62 @@ export function ProjectMeta({ project }: ProjectMetaProps) {
       })
     : null
 
-  return (
-    <div className="flex flex-col gap-6 rounded-md border border-border bg-surface p-6">
-      <h3 className="text-label text-text-tertiary">Project Information</h3>
+  const rowClass = 'grid grid-cols-[6.5rem_1fr] gap-4 border-b border-border py-3.5 last:border-b-0'
 
-      <div className="flex flex-col gap-4 text-body-sm">
+  return (
+    <div className="relative border border-border bg-surface/70 p-5 sm:p-6">
+      <CornerBrackets />
+      <h2 className="text-label border-b border-border pb-4 text-text-tertiary">Project information</h2>
+
+      <dl className="text-body-sm">
         {project.status && (
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <span className="flex items-center gap-2 text-text-secondary">
-              <CheckCircle2 className="size-4 text-text-tertiary" aria-hidden="true" />
-              Status
-            </span>
-            <Badge variant={project.status === 'published' ? 'accent' : 'neutral'}>
-              {project.status}
-            </Badge>
+          <div className={rowClass}>
+            <dt className="text-label pt-0.5 text-text-tertiary">Status</dt>
+            <dd className="flex items-center gap-2 text-text">
+              <span
+                aria-hidden="true"
+                className={project.status === 'published' ? 'size-1.5 bg-accent' : 'size-1.5 bg-border-strong'}
+              />
+              {PROJECT_STATUS_LABELS[project.status] ?? project.status}
+            </dd>
           </div>
         )}
 
         {formattedDate && (
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <span className="flex items-center gap-2 text-text-secondary">
-              <Calendar className="size-4 text-text-tertiary" aria-hidden="true" />
-              Timeline
-            </span>
-            <span className="font-mono text-text">{formattedDate}</span>
+          <div className={rowClass}>
+            <dt className="text-label pt-0.5 text-text-tertiary">Timeline</dt>
+            <dd className="font-mono text-text tabular">{formattedDate}</dd>
           </div>
         )}
 
         {project.technologies.length > 0 && (
-          <div className="flex flex-col gap-2 border-b border-border/60 pb-3">
-            <span className="flex items-center gap-2 text-text-secondary">
-              <Layers className="size-4 text-text-tertiary" aria-hidden="true" />
-              Stack
-            </span>
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {project.technologies.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded bg-surface-2 px-2 py-0.5 font-mono text-caption text-text-secondary"
-                >
+          <div className={rowClass}>
+            <dt className="text-label pt-0.5 text-text-tertiary">Stack</dt>
+            <dd className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.8125rem] text-text">
+              {project.technologies.map((tech, i) => (
+                <span key={tech} className="whitespace-nowrap">
+                  {i > 0 && <span aria-hidden="true" className="mr-2 text-border-strong">/</span>}
                   {tech}
                 </span>
               ))}
-            </div>
+            </dd>
           </div>
         )}
 
         {(project.liveUrl || project.githubUrl) && (
-          <div className="flex flex-col gap-2 pt-1 min-w-0">
-            <span className="text-caption text-text-tertiary">Direct Links</span>
-            <div className="flex flex-col gap-2 min-w-0">
+          <div className={rowClass}>
+            <dt className="text-label pt-0.5 text-text-tertiary">Links</dt>
+            <dd className="flex min-w-0 flex-col gap-2">
               {project.liveUrl && (
                 <a
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 font-mono text-caption text-accent hover:underline min-w-0"
+                  className="nudge-icons group inline-flex min-w-0 items-center gap-1.5 font-mono text-caption text-accent"
                 >
-                  <Globe className="size-3.5 shrink-0" aria-hidden="true" />
-                  <span className="truncate">{project.liveUrl.replace(/^https?:\/\//, '')}</span>
+                  <span className="link-underline truncate">{project.liveUrl.replace(/^https?:\/\//, '')}</span>
+                  <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="sr-only">(live site, opens in a new tab)</span>
                 </a>
               )}
               {project.githubUrl && (
@@ -80,16 +82,19 @@ export function ProjectMeta({ project }: ProjectMetaProps) {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 font-mono text-caption text-text-secondary hover:text-text hover:underline min-w-0"
+                  className="nudge-icons group inline-flex min-w-0 items-center gap-1.5 font-mono text-caption text-text-secondary transition-colors hover:text-text"
                 >
-                  <Code2 className="size-3.5 shrink-0" aria-hidden="true" />
-                  <span className="truncate">{project.githubUrl.replace(/^https?:\/\/(www\.)?github\.com\//, '')}</span>
+                  <span className="link-underline truncate">
+                    {project.githubUrl.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
+                  </span>
+                  <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="sr-only">(source on GitHub, opens in a new tab)</span>
                 </a>
               )}
-            </div>
+            </dd>
           </div>
         )}
-      </div>
+      </dl>
     </div>
   )
 }

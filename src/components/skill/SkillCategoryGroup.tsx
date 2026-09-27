@@ -12,9 +12,9 @@ export function SkillCategoryGroup({ category, skills, projects }: SkillCategory
   if (skills.length === 0) return null
 
   return (
-    <div>
+    <div className="border-t border-border pt-4">
       <h3 className="text-label text-text-tertiary">{SKILL_CATEGORY_LABELS[category]}</h3>
-      <div className="mt-2">
+      <div className="mt-1">
         {skills.map((skill) => (
           <SkillItem key={skill.id} skill={skill} projects={projects} />
         ))}
